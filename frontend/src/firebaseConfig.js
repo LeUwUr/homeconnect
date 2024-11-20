@@ -1,16 +1,15 @@
-// Importa las funciones necesarias desde Firebase
+// Importa las funciones necesarias de Firebase
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
-
-// Tu configuración de Firebase
+// Configuración de Firebase usando variables de entorno
 const firebaseConfig = {
-  apiKey: "AIzaSyDRGtjKmIk43eI9h8lr4n6ZEHq1O6L7t8Y",
-  authDomain: "homeconnect-cbf96.firebaseapp.com",
-  projectId: "homeconnect-cbf96",
-  storageBucket: "homeconnect-cbf96.firebasestorage.app",
-  messagingSenderId: "773309257989",
-  appId: "1:773309257989:web:58b167fa5182615fbe7f6c",
-  measurementId: "G-D2XTJB36GG",
+  apiKey: process.env.REACT_APP_API_KEY,
+  authDomain: process.env.REACT_APP_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_APP_ID,
+  measurementId: process.env.REACT_APP_MEASUREMENT_ID,
 };
 
 // Inicializa Firebase
@@ -19,3 +18,4 @@ const app = initializeApp(firebaseConfig);
 // Configuración para autenticación con Google
 export const auth = getAuth(app); // Exporta la autenticación
 export const googleProvider = new GoogleAuthProvider(); // Exporta el proveedor de Google
+
