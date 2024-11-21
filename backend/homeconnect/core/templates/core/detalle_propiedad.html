@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Lista de Propiedades</title>
+        {% load static %} <!-- Cargar archivos estáticos -->
+        <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    </head>
+<body>
+    <h1>{{ propiedad.titulo }}</h1>
+
+    <p><strong>Ubicación:</strong> {{ propiedad.direccion }}</p>
+    <p><strong>Precio:</strong> ${{ propiedad.precio }}</p>
+
+    <div class="ofertas">
+        <h2>Ofertas:</h2>
+        {% if propiedad.ofertas.all %}
+            <ul>
+                {% for oferta in propiedad.ofertas.all %}
+                    <li>{{ oferta.descuento }}% de descuento - {{ oferta.descripcion }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No hay ofertas disponibles para esta propiedad.</p>
+        {% endif %}
+    </div>
+
+    <a href="{% url 'lista_propiedades' %}">Volver a la Lista de Propiedades</a>
+</body>
+</html>
