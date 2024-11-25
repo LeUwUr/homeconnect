@@ -1,30 +1,46 @@
 import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
-const RegisterAgent = () => {
+const RegisterClient = () => {
   const location = useLocation();
-  const { email } = location.state || {}; // Correo del usuario autenticado
+  const navigate = useNavigate();
+  const { email } = location.state || {}; // Obtén el correo del estado
 
-  // Estado para otros campos
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [agency, setAgency] = useState("");
+  const [password, setPassword] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const agentData = { name, email, phone, agency };
 
-    // Aquí puedes enviar `agentData` al backend
-    console.log("Registrando agente inmobiliario:", agentData);
+    try {
+      const response = await fetch("http://127.0.0.1:8000/clientes/register/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, name, phone, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert(data.message);
+        navigate(data.redirectTo); // Redirige a /home después del registro
+      } else {
+        alert(data.message);
+      }
+    } catch (error) {
+      console.error("Error al registrar al cliente:", error);
+    }
   };
+
+  console.log("Correo recibido en el formulario:", email);
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-white">
-      <h1 className="text-3xl font-bold mb-6">Registro de Agente Inmobiliario</h1>
-      <form
-        className="w-full max-w-sm bg-white"
-        onSubmit={handleSubmit}
-      >
+      <h1 className="text-3xl font-bold mb-6">Registro de Cliente</h1>
+      <form className="w-full max-w-sm bg-white" onSubmit={handleSubmit}>
         {/* Campo: Nombre */}
         <div className="mb-4">
           <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
@@ -49,7 +65,7 @@ const RegisterAgent = () => {
           <input
             id="email"
             type="email"
-            value={email}
+            value={email || ""}
             readOnly
             className="w-full px-3 py-2 border bg-gray-100 rounded focus:outline-none cursor-not-allowed"
           />
@@ -71,17 +87,17 @@ const RegisterAgent = () => {
           />
         </div>
 
-        {/* Campo: Agencia */}
+        {/* Campo: Contraseña */}
         <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="agency">
-            Agencia Inmobiliaria
+          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
+            Contraseña
           </label>
           <input
-            id="agency"
-            type="text"
-            placeholder="Nombre de la agencia"
-            value={agency}
-            onChange={(e) => setAgency(e.target.value)}
+            id="password"
+            type="password"
+            placeholder="Contraseña"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
             required
           />
@@ -91,9 +107,9 @@ const RegisterAgent = () => {
         <div className="flex items-center justify-between">
           <button
             type="submit"
-            className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-600"
+            className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
           >
-            Registrar Agente
+            Registrar Cliente
           </button>
         </div>
       </form>
@@ -101,4 +117,4 @@ const RegisterAgent = () => {
   );
 };
 
-export default RegisterAgent;
+export default RegisterClient;

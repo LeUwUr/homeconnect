@@ -2,8 +2,10 @@ import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Login from "./components/Login";
 import SelectRegister from "./components/SelectRegister";
-import Register from "./components/Register";
+import RegisterClient from "./components/RegisterClient";
 import RegisterAgent from "./components/RegisterAgent";
+import Home from "./components/Home";
+
 
 function App() {
   return (
@@ -16,10 +18,13 @@ function App() {
         <Route path="/register" element={<SelectRegister />} />
 
          {/* Ruta de formulario de registro */}
-         <Route path="/register/client" element={<Register />} />
+         <Route path="/register/client" element={<RegisterClient />} />
 
            {/* Ruta de formulario de registro para agente inmobiliario */}
         <Route path="/register/agent" element={<RegisterAgent />} />
+
+          {/* Ruta para Home */}
+        <Route path="/home" element={<Home />} />
       </Routes>
     </Router>
   );

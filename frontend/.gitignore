@@ -1,4 +1,21 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# Archivos compilados de Python
+*.pyc
+*.pyo
+__pycache__/
+
+# Archivos de entorno virtual
+venv/
+env/
+homeconnectenv/
+*.env
+.env.local
+.env.development
+.env.production
+
+# Archivos sensibles
+firebaseConfig.js
+homeconnect/settings.py
+.firebaserc
 
 # dependencies
 /node_modules
@@ -8,20 +25,48 @@
 # testing
 /coverage
 
-# production
+# Archivos de compilación de React
 /build
 
-# misc
+# MacOS
 .DS_Store
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.AppleDouble
+.LSOverride
 
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Linux
+*~
+
+# Visual Studio Code
+.vscode/
+*.code-workspace
+
+# PyCharm
+.idea/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# JetBrains IDEs
+*.iml
+out/
+
+# Node.js
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Archivo de configuración de entorno
-.env
+# Logs y temporales
+*.log
+*.swp
+*.bak
+*.tmp
+*.orig
 
+# Archivos de base de datos y backups
+*.sql
+*.dump
