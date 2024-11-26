@@ -59,12 +59,12 @@ const Login = () => {
           },
           body: JSON.stringify({ email }),
         });
-  
+ 
         const data = await response.json();
   
         if (response.ok && data.exists) {
           // Si el correo ya está registrado, redirige a /home
-          navigate("/home");
+          navigate("/inicio");
         } else {
           // Si el correo no está registrado, redirige al formulario de registro
           navigate("/register", {

@@ -5,6 +5,7 @@ import SelectRegister from "./components/SelectRegister";
 import RegisterClient from "./components/RegisterClient";
 import RegisterAgent from "./components/RegisterAgent";
 import Home from "./components/Home";
+import Inicio from "./components/Inicio";
 
 
 function App() {
@@ -25,6 +26,9 @@ function App() {
 
           {/* Ruta para Home */}
         <Route path="/home" element={<Home />} />
+
+          {/* Ruta para Home */}
+        <Route path="/inicio" element={<Inicio />} />
       </Routes>
     </Router>
   );
