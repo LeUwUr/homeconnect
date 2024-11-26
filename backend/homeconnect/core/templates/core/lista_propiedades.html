@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Lista de Propiedades</title>
+        {% load static %} <!-- Cargar archivos estáticos -->
+        <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    </head>
+<body>
+    <h1>Propiedades en Venta [Agente de ventas]</h1>
+    <h2>Bienvenida: {{ usuario.nombre }}</h2> 
+    <div class="propiedades">
+        {% for propiedad in propiedades %}
+        <div class="propiedad">
+            <h2>{{ propiedad.titulo }}</h2>
+            <p><strong>Ubicación:</strong> {{ propiedad.direccion }}</p>
+            <p><strong>Precio original:</strong> ${{ propiedad.precio }}</p>
+        
+            <p><strong>Precio con oferta:</strong> $
+                {{ propiedad.precio_con_descuento|floatformat:2 }}
+            </p>
+
+            <p><strong>Agente de venta: </strong>{{propiedad.usuario.nombre}}</p>
+        
+            <!-- Muestra las ofertas existentes -->
+            <div class="ofertas">
+                <h3>Ofertas:</h3>
+                {% if propiedad.ofertas.all %}
+                    <ul>
+                        {% for oferta in propiedad.ofertas.all %}
+                            <li>{{ oferta.descuento }}% de descuento - {{ oferta.descripcion }}
+                                <a href="{% url 'editar_oferta' oferta.id %}">Editar</a> | 
+                                <a href="{% url 'eliminar_oferta' oferta.id %}">Eliminar</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No hay ofertas disponibles para esta propiedad.</p>
+                {% endif %}
+            </div>
+
+            <!-- Botón para agregar una oferta solo si no hay ofertas -->
+            {% if not propiedad.ofertas.all %}
+                <form action="{% url 'agregar_oferta' propiedad.id %}" method="get">
+                    <button type="submit">Agregar Oferta</button>
+                </form>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
