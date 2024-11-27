@@ -10,7 +10,7 @@ from .views import (
     UserUpdateView,
     UserDeleteView,
     PropiedadCreateView, PropiedadListView, PropiedadDetailView, PropiedadUpdateView, PropiedadDeleteView,
-    PropiedadDetalleAPIView,
+    PropiedadCompletaCreateView, PropiedadDetalleAPIView,
     registrar_foto, listar_fotos, detalles_foto, actualizar_foto, eliminar_foto,
     registrar_clasificacion, listar_clasificaciones, detalles_clasificacion, actualizar_clasificacion, eliminar_clasificacion,
     registrar_servicios, listar_servicios, detalles_servicios, actualizar_servicios, eliminar_servicios

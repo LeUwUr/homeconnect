@@ -258,9 +258,7 @@ const Catalog: React.FC = () => {
                 >
                   <div className="relative h-48">
                     <img
-                      src={property.foto_frontal.startsWith('/media') ? 
-                        'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&auto=format&fit=crop' : 
-                        property.foto_frontal}
+                      src={'http://127.0.0.1:8000/moduloac'+property.foto_frontal}
                       alt={property.titulo}
                       className="w-full h-full object-cover"
                     />
@@ -293,7 +291,7 @@ const Catalog: React.FC = () => {
                     </div>
 
                     <div className="pt-4 border-t border-gray-200 flex justify-between items-center">
-                      <p className="text-1xl font-bold text-indigo-600 flex items-center gap-2">
+                      <p className="text-2xl font-bold text-indigo-600 flex items-center gap-2">
                         <DollarSign className="h-5 w-5" />
                         {formatPrice(property.precio)}
                       </p>

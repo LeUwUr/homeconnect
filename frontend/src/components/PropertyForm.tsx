@@ -163,7 +163,8 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ onNext, updateFormData }) =
             onChange={handleChange}
           >
             <option value="Disponible">Disponible</option>
-            <option value="En Espera">En Espera</option>
+            <option value="Vendido">Vendido</option>
+            <option value="Rentado">Rentado</option>
           </select>
         </div>
 

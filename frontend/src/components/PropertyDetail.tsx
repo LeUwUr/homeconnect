@@ -96,9 +96,7 @@ const PropertyDetail: React.FC<PropertyDetailProps> = ({ propertyId, onClose }) 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-4">
                 <img
-                  src={selectedImage?.startsWith('/media') ? 
-                    'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&auto=format&fit=crop' : 
-                    selectedImage!}
+                  src={'http://127.0.0.1:8000/moduloac'+selectedImage!}
                   alt={details.propiedad.titulo}
                   className="w-full h-64 object-cover rounded-lg"
                 />
@@ -106,9 +104,7 @@ const PropertyDetail: React.FC<PropertyDetailProps> = ({ propertyId, onClose }) 
                 {details.fotos_adicionales.length > 0 && (
                   <div className="grid grid-cols-4 gap-2">
                     <img
-                      src={details.propiedad.foto_frontal.startsWith('/media') ? 
-                        'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&auto=format&fit=crop' : 
-                        details.propiedad.foto_frontal}
+                      src={'http://127.0.0.1:8000/moduloac'+details.propiedad.foto_frontal}
                       alt="Frontal"
                       className={`w-full h-20 object-cover rounded cursor-pointer ${
                         selectedImage === details.propiedad.foto_frontal ? 'ring-2 ring-indigo-500' : ''
@@ -118,9 +114,7 @@ const PropertyDetail: React.FC<PropertyDetailProps> = ({ propertyId, onClose }) 
                     {details.fotos_adicionales.map(foto => (
                       <img
                         key={foto.id}
-                        src={foto.url_foto.startsWith('/media') ? 
-                          'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&auto=format&fit=crop' : 
-                          foto.url_foto}
+                        src={'http://127.0.0.1:8000/moduloac'+foto.url_foto}
                         alt={`Adicional ${foto.id}`}
                         className={`w-full h-20 object-cover rounded cursor-pointer ${
                           selectedImage === foto.url_foto ? 'ring-2 ring-indigo-500' : ''

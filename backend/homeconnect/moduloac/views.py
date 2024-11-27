@@ -15,6 +15,7 @@ from .serializers import (
     ServiciosSerializer, UserSerializer,
 )
 import json
+from rest_framework.parsers import MultiPartParser, JSONParser
 
 ### 1. CRUD para Usuario ###
 
@@ -298,72 +299,66 @@ def eliminar_servicios(request, servicio_id):
 
 # CREAR PROPIEDADD COMPLETA
 class PropiedadCompletaCreateView(APIView):
-    """
-    Crea una propiedad con sus fotos adicionales, clasificaciones y servicios.
-    """
-    parser_classes = (
-        MultiPartParser, JSONParser)  # Permite manejar archivos y JSON
+    permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, JSONParser]
 
     @transaction.atomic
     def post(self, request):
+        # Procesar la propiedad como JSON
+        propiedad_blob = request.data.get("propiedad")
+        if not propiedad_blob:
+            return Response({"error": "El campo 'propiedad' es obligatorio."}, status=status.HTTP_400_BAD_REQUEST)
+
         try:
-            # Extraer y procesar la información de la propiedad
-            propiedad_data = request.data.get('propiedad')
-            if not propiedad_data:
-                return Response({'error': 'El campo "propiedad" es obligatorio.'}, status=status.HTTP_400_BAD_REQUEST)
+            propiedad_data = json.loads(propiedad_blob.read().decode("utf-8"))
+        except json.JSONDecodeError:
+            return Response({"error": "El campo 'propiedad' no es un JSON válido."}, status=status.HTTP_400_BAD_REQUEST)
 
-            try:
-                # Convertir string JSON a dict
-                propiedad_data = json.loads(propiedad_data)
-            except Exception as e:
-                return Response({'error': f'Error al procesar "propiedad": {str(e)}'}, status=status.HTTP_400_BAD_REQUEST)
+        # Extraer y validar otros datos del request
+        foto_frontal = request.data.get("foto_frontal")
+        servicios_data = request.data.get("services", None)
+        classification_data = request.data.get("classification", None)
+        fotos_adicionales_data = request.data.get("fotos_adicionales", None)
 
-            propiedad_serializer = PropiedadSerializer(data=propiedad_data)
-            propiedad_serializer.is_valid(raise_exception=True)
-            propiedad = propiedad_serializer.save()
+        # Insertar Propiedad
+        propiedad_serializer = PropiedadSerializer(data={
+            **propiedad_data,
+            "usuario": request.user.id,
+        })
 
-            # Procesar fotos adicionales
-            fotos_data = request.data.getlist(
-                'fotos_adicionales')  # Manejar múltiples archivos
-            for foto_file in fotos_data:
+        if not propiedad_serializer.is_valid():
+            return Response(propiedad_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        propiedad = propiedad_serializer.save(foto_frontal=foto_frontal)
+
+        # Insertar Servicios
+        if servicios_data:
+            servicios = json.loads(servicios_data)
+            servicios_serializer = ServiciosSerializer(
+                data={**servicios, "propiedad_id": propiedad.id})
+            if not servicios_serializer.is_valid():
+                raise transaction.Rollback
+            servicios_serializer.save()
+
+        # Insertar Clasificación
+        if classification_data:
+            classification = json.loads(classification_data)
+            classification_serializer = ClasificacionSerializer(
+                data={**classification, "propiedad_id": propiedad.id})
+            if not classification_serializer.is_valid():
+                raise transaction.Rollback
+            classification_serializer.save()
+
+        # Insertar Fotos Adicionales
+        if fotos_adicionales_data:
+            fotos = json.loads(fotos_adicionales_data)
+            for foto in fotos:
                 foto_serializer = FotoAdicionalSerializer(
-                    data={'propiedad': propiedad.id, 'foto': foto_file})
-                foto_serializer.is_valid(raise_exception=True)
+                    data={**foto, "propiedad_id": propiedad.id})
+                if not foto_serializer.is_valid():
+                    raise transaction.Rollback
                 foto_serializer.save()
 
-            # Procesar clasificaciones
-            clasificaciones_data = request.data.get('clasificacion', [])
-            if isinstance(clasificaciones_data, str):
-                clasificaciones_data = json.loads(clasificaciones_data)
-            for clasificacion in clasificaciones_data:
-                clasificacion['propiedad'] = propiedad.id
-                clasificacion_serializer = ClasificacionPropiedadSerializer(
-                    data=clasificacion)
-                clasificacion_serializer.is_valid(raise_exception=True)
-                clasificacion_serializer.save()
-
-            # Procesar servicios
-            servicios_data = request.data.get('servicios')
-            if servicios_data:
-                if isinstance(servicios_data, str):
-                    servicios_data = json.loads(servicios_data)
-                servicios_data['propiedad'] = propiedad.id
-                servicios_serializer = ServiciosSerializer(data=servicios_data)
-                servicios_serializer.is_valid(raise_exception=True)
-                servicios_serializer.save()
-
-            # Estructurar la respuesta
-            response_data = {
-                'propiedad': propiedad_serializer.data,
-                'fotos_adicionales': [f.foto.url for f in propiedad.fotos_adicionales.all()],
-                'clasificacion': clasificaciones_data,
-                'servicios': servicios_data,
-            }
-            return Response(response_data, status=status.HTTP_201_CREATED)
-
-        except Exception as e:
-            transaction.set_rollback(True)
-            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message": "Propiedad creada con éxito."}, status=status.HTTP_201_CREATED)
 
 
 class PropiedadDetalleAPIView(APIView):

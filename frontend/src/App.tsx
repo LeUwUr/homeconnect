@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
-import { Home, Building2, Sparkles, Plus, Grid } from 'lucide-react';
+import { Home, Building2, Sparkles, Plus, Grid, Image } from 'lucide-react';
 import PropertyForm from './components/PropertyForm';
 import ServicesForm from './components/ServicesForm';
 import ClassificationForm from './components/ClassificationForm';
+import PhotosForm from './components/PhotosForm';
 import Catalog from './components/Catalog';
 import { toast, Toaster } from 'react-hot-toast';
-import axios from 'axios';
-
-const API_URL = 'http://127.0.0.1:8000/moduloac/propiedades/fullcreate/';
-const TOKEN = '5d6d86a40448dfb53abd9ca53d222ffec7ef6c2f';
+import { registerProperty, registerServices, registerClassification, registerAdditionalPhoto } from './utils/api';
 
 function App() {
   const [view, setView] = useState<'catalog' | 'form'>('catalog');
@@ -25,65 +23,61 @@ function App() {
       estado: '',
       fecha_adquisicion: ''
     },
-    fotos_adicionales: [] as { url_foto: string }[],
+    fotos_adicionales: [] as File[],
     services: {},
     classification: {}
   });
 
   const steps = [
     { number: 1, title: 'Propiedad', icon: Home },
-    { number: 2, title: 'Servicios', icon: Sparkles },
-    { number: 3, title: 'Clasificación', icon: Building2 }
+    { number: 2, title: 'Fotos', icon: Image },
+    { number: 3, title: 'Servicios', icon: Sparkles },
+    { number: 4, title: 'Clasificación', icon: Building2 }
   ];
 
   const handleSubmit = async () => {
     try {
-      const submitData = new FormData();
-
-      // Crear el objeto propiedad, convirtiendo los valores apropiados
-      const propertyData = {
-        ...formData.propiedad,
-        precio: parseFloat(formData.propiedad.precio as string),
-        tamano_m2: parseFloat(formData.propiedad.tamano_m2 as string),
-      };
-
-      // Si hay una foto frontal, agregarla al FormData
-      if (formData.propiedad.foto_frontal) {
-        submitData.append('foto_frontal', formData.propiedad.foto_frontal);
-      }
-
-      // Convertir el objeto propiedad a un archivo JSON
-      const propertyBlob = new Blob([JSON.stringify(propertyData)], { type: 'application/json' });
-      submitData.append('propiedad', propertyBlob);
-
-      // Agregar otros datos (services, classification, fotos_adicionales)
-      submitData.append('services', JSON.stringify(formData.services));
-      submitData.append('classification', JSON.stringify(formData.classification));
-      submitData.append('fotos_adicionales', JSON.stringify(formData.fotos_adicionales));
-
-      // Imprimir FormData para depuración
-      for (let [key, value] of submitData.entries()) {
-        console.log(`${key}:`, value);
-      }
-
-      // Enviar la solicitud POST a la API
-      const response = await axios.post(API_URL, submitData, {
-        headers: {
-          'Authorization': `Token ${TOKEN}`,
-          'Content-Type': 'multipart/form-data',
-        },
+      // Step 1: Register property
+      const propertyFormData = new FormData();
+      Object.entries(formData.propiedad).forEach(([key, value]) => {
+        if (key === 'foto_frontal' && value instanceof File) {
+          propertyFormData.append('foto_frontal', value);
+        } else if (value !== null) {
+          propertyFormData.append(key, value.toString());
+        }
       });
 
-      // Mostrar mensaje de éxito
+      const propertyResponse = await registerProperty(propertyFormData);
+      const propertyId = propertyResponse.id;
+
+      // Step 2: Register services
+      await registerServices({
+        propiedad: propertyId,
+        ...formData.services
+      });
+
+      // Step 3: Register classification
+      await registerClassification({
+        propiedad: propertyId,
+        ...formData.classification
+      });
+
+      // Step 4: Register additional photos
+      for (const photo of formData.fotos_adicionales) {
+        const photoFormData = new FormData();
+        photoFormData.append('url_foto', photo);
+        photoFormData.append('propiedad', propertyId.toString());
+        await registerAdditionalPhoto(photoFormData);
+      }
+
       toast.success('Propiedad registrada exitosamente!');
       setView('catalog');
       setStep(1);
     } catch (error) {
       toast.error('Error al registrar la propiedad');
-      console.error('Error:', error.response?.data || error.message);
+      console.error('Error:', error);
     }
   };
-
 
   const nextStep = () => setStep(step + 1);
   const prevStep = () => setStep(step - 1);
@@ -103,16 +97,18 @@ function App() {
             <div className="flex">
               <button
                 onClick={() => setView('catalog')}
-                className={`inline-flex items-center px-4 py-2 border-b-2 ${view === 'catalog' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500'
-                  } hover:text-indigo-600 hover:border-indigo-300`}
+                className={`inline-flex items-center px-4 py-2 border-b-2 ${
+                  view === 'catalog' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500'
+                } hover:text-indigo-600 hover:border-indigo-300`}
               >
                 <Grid className="h-5 w-5 mr-2" />
                 Catálogo
               </button>
               <button
                 onClick={() => setView('form')}
-                className={`inline-flex items-center px-4 py-2 border-b-2 ${view === 'form' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500'
-                  } hover:text-indigo-600 hover:border-indigo-300`}
+                className={`inline-flex items-center px-4 py-2 border-b-2 ${
+                  view === 'form' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500'
+                } hover:text-indigo-600 hover:border-indigo-300`}
               >
                 <Plus className="h-5 w-5 mr-2" />
                 Nueva Propiedad
@@ -151,19 +147,26 @@ function App() {
 
             <div className="mt-8">
               {step === 1 && (
-                <PropertyForm
+                <PropertyForm 
                   onNext={nextStep}
                   updateFormData={(data) => updateFormData('propiedad', data)}
                 />
               )}
               {step === 2 && (
+                <PhotosForm
+                  onNext={nextStep}
+                  onPrev={prevStep}
+                  updateFormData={(data) => updateFormData('fotos_adicionales', data)}
+                />
+              )}
+              {step === 3 && (
                 <ServicesForm
                   onNext={nextStep}
                   onPrev={prevStep}
                   updateFormData={(data) => updateFormData('services', data)}
                 />
               )}
-              {step === 3 && (
+              {step === 4 && (
                 <ClassificationForm
                   onPrev={prevStep}
                   onSubmit={handleSubmit}
