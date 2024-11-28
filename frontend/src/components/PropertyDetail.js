@@ -3,26 +3,14 @@ import axios from 'axios';
 import { format } from 'date-fns';
 import { X, Check, ArrowLeft } from 'lucide-react';
 
-interface PropertyDetailProps {
-  propertyId: number;
-  onClose: () => void;
-}
-
-interface PropertyDetails {
-  propiedad: any;
-  servicios: any;
-  clasificacion: any[];
-  fotos_adicionales: Array<{
-    id: number;
-    url_foto: string;
-    propiedad: number;
-  }>;
-}
-
-const PropertyDetail: React.FC<PropertyDetailProps> = ({ propertyId, onClose }) => {
-  const [details, setDetails] = useState<PropertyDetails | null>(null);
+function PropertyDetail({ propertyId, onClose }) {
+  const [details, setDetails] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  const handleClick = () => {
+    window.open('/cargarArchivos.html', '_blank', 'noopener noreferrer');
+  };
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -57,7 +45,7 @@ const PropertyDetail: React.FC<PropertyDetailProps> = ({ propertyId, onClose }) 
 
   if (!details) return null;
 
-  const formatPrice = (price: string) => {
+  const formatPrice = (price) => {
     return new Intl.NumberFormat('es-MX', {
       style: 'currency',
       currency: 'MXN',
@@ -93,35 +81,38 @@ const PropertyDetail: React.FC<PropertyDetailProps> = ({ propertyId, onClose }) 
               <h2 className="text-2xl font-bold text-gray-900">{details.propiedad.titulo}</h2>
             </div>
 
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-4">
                 <img
-                  src={'http://127.0.0.1:8000/moduloac'+selectedImage!}
+                  src={'http://127.0.0.1:8000/moduloac' + selectedImage}
                   alt={details.propiedad.titulo}
                   className="w-full h-64 object-cover rounded-lg"
                 />
-                
+                <button className="App-link font-bold" onClick={handleClick}>
+                  Documentos de la propiedad
+                </button>
+
                 {details.fotos_adicionales.length > 0 && (
                   <div className="grid grid-cols-4 gap-2">
                     <img
-                      src={'http://127.0.0.1:8000/moduloac'+details.propiedad.foto_frontal}
+                      src={'http://127.0.0.1:8000/moduloac' + details.propiedad.foto_frontal}
                       alt="Frontal"
-                      className={`w-full h-20 object-cover rounded cursor-pointer ${
-                        selectedImage === details.propiedad.foto_frontal ? 'ring-2 ring-indigo-500' : ''
-                      }`}
+                      className={`w-full h-20 object-cover rounded cursor-pointer ${selectedImage === details.propiedad.foto_frontal ? 'ring-2 ring-indigo-500' : ''
+                        }`}
                       onClick={() => setSelectedImage(details.propiedad.foto_frontal)}
                     />
                     {details.fotos_adicionales.map(foto => (
                       <img
                         key={foto.id}
-                        src={'http://127.0.0.1:8000/moduloac'+foto.url_foto}
+                        src={'http://127.0.0.1:8000/moduloac' + foto.url_foto}
                         alt={`Adicional ${foto.id}`}
-                        className={`w-full h-20 object-cover rounded cursor-pointer ${
-                          selectedImage === foto.url_foto ? 'ring-2 ring-indigo-500' : ''
-                        }`}
+                        className={`w-full h-20 object-cover rounded cursor-pointer ${selectedImage === foto.url_foto ? 'ring-2 ring-indigo-500' : ''
+                          }`}
                         onClick={() => setSelectedImage(foto.url_foto)}
                       />
                     ))}
+
                   </div>
                 )}
               </div>
@@ -227,6 +218,6 @@ const PropertyDetail: React.FC<PropertyDetailProps> = ({ propertyId, onClose }) 
       </div>
     </div>
   );
-};
+}
 
 export default PropertyDetail;

@@ -5,33 +5,10 @@ import { format } from 'date-fns';
 import PropertyDetail from './PropertyDetail';
 import ServiceFilters from './ServiceFilters';
 
-interface Property {
-  id: number;
-  titulo: string;
-  precio: string;
-  direccion: string;
-  tamano_m2: string;
-  estado: string;
-  fecha_adquisicion: string;
-  foto_frontal: string;
-  disponibilidad: string | null;
-}
-
-interface Filters {
-  services: {
-    [key: string]: boolean;
-  };
-  classification: {
-    ubicacion: string;
-    estado_propiedad: string;
-    privada: string;
-  };
-}
-
 const API_URL = 'http://127.0.0.1:8000/moduloac/propiedades/';
 const TOKEN = '5d6d86a40448dfb53abd9ca53d222ffec7ef6c2f';
 
-const formatPrice = (price: string) => {
+const formatPrice = (price) => {
   return new Intl.NumberFormat('es-MX', {
     style: 'currency',
     currency: 'MXN',
@@ -40,14 +17,14 @@ const formatPrice = (price: string) => {
   }).format(Number(price));
 };
 
-const Catalog: React.FC = () => {
-  const [properties, setProperties] = useState<Property[]>([]);
+function Catalog() {
+  const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [stateFilter, setStateFilter] = useState('');
-  const [selectedProperty, setSelectedProperty] = useState<number | null>(null);
-  const [filters, setFilters] = useState<Filters>({
+  const [selectedProperty, setSelectedProperty] = useState(null);
+  const [filters, setFilters] = useState({
     services: {
       electricidad: false,
       agua: false,
@@ -106,7 +83,7 @@ const Catalog: React.FC = () => {
             'Authorization': `Token ${TOKEN}`,
           },
         });
-        setProperties(response.data.filter((prop: Property) => !prop.eliminado));
+        setProperties(response.data.filter((prop) => !prop.eliminado));
         setLoading(false);
       } catch (err) {
         setError('Error al cargar las propiedades');
@@ -117,7 +94,7 @@ const Catalog: React.FC = () => {
     fetchProperties();
   }, []);
 
-  const handleServiceFilterChange = (service: string) => {
+  const handleServiceFilterChange = (service) => {
     setFilters(prev => ({
       ...prev,
       services: {
@@ -127,7 +104,7 @@ const Catalog: React.FC = () => {
     }));
   };
 
-  const handleClassificationFilterChange = (field: string, value: string) => {
+  const handleClassificationFilterChange = (field, value) => {
     setFilters(prev => ({
       ...prev,
       classification: {
@@ -319,6 +296,6 @@ const Catalog: React.FC = () => {
       )}
     </div>
   );
-};
+}
 
 export default Catalog;

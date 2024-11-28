@@ -1,12 +1,6 @@
 import React, { useState } from 'react';
 
-interface ServicesFormProps {
-  onNext: () => void;
-  onPrev: () => void;
-  updateFormData: (data: any) => void;
-}
-
-const ServicesForm: React.FC<ServicesFormProps> = ({ onNext, onPrev, updateFormData }) => {
+function ServicesForm({ onNext, onPrev, updateFormData }) {
   const [services, setServices] = useState({
     electricidad: false,
     agua: false,
@@ -51,7 +45,7 @@ const ServicesForm: React.FC<ServicesFormProps> = ({ onNext, onPrev, updateFormD
     jardines_verticales: false
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e) => {
     const { name, checked } = e.target;
     setServices(prev => ({
       ...prev,
@@ -59,7 +53,7 @@ const ServicesForm: React.FC<ServicesFormProps> = ({ onNext, onPrev, updateFormD
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     updateFormData(services);
     onNext();
@@ -88,7 +82,7 @@ const ServicesForm: React.FC<ServicesFormProps> = ({ onNext, onPrev, updateFormD
                   type="checkbox"
                   id={service}
                   name={service}
-                  checked={services[service as keyof typeof services]}
+                  checked={services[service]}
                   onChange={handleChange}
                   className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
                 />
@@ -118,6 +112,6 @@ const ServicesForm: React.FC<ServicesFormProps> = ({ onNext, onPrev, updateFormD
       </div>
     </form>
   );
-};
+}
 
 export default ServicesForm;

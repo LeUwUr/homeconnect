@@ -1,13 +1,6 @@
 import React from 'react';
 
-interface ServiceFiltersProps {
-  filters: {
-    [key: string]: boolean;
-  };
-  onChange: (service: string) => void;
-}
-
-const ServiceFilters: React.FC<ServiceFiltersProps> = ({ filters, onChange }) => {
+function ServiceFilters({ filters, onChange }) {
   const serviceCategories = {
     'Servicios Básicos': ['electricidad', 'agua', 'gas', 'internet', 'television_cable'],
     'Comodidades': ['aire_acondicionado', 'calefaccion', 'cocina_equipada', 'closets_empotrados'],
@@ -46,6 +39,6 @@ const ServiceFilters: React.FC<ServiceFiltersProps> = ({ filters, onChange }) =>
       </div>
     </div>
   );
-};
+}
 
 export default ServiceFilters;

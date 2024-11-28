@@ -10,7 +10,7 @@ export const api = axios.create({
   }
 });
 
-export const registerProperty = async (propertyData: FormData) => {
+export const registerProperty = async (propertyData) => {
   try {
     const response = await api.post('/propiedades/create/', propertyData);
     return response.data;
@@ -19,7 +19,7 @@ export const registerProperty = async (propertyData: FormData) => {
   }
 };
 
-export const registerServices = async (servicesData: any) => {
+export const registerServices = async (servicesData) => {
   try {
     const response = await api.post('/servicios/registrar/', servicesData);
     return response.data;
@@ -28,7 +28,7 @@ export const registerServices = async (servicesData: any) => {
   }
 };
 
-export const registerClassification = async (classificationData: any) => {
+export const registerClassification = async (classificationData) => {
   try {
     const response = await api.post('/clasificaciones/registrar/', classificationData);
     return response.data;
@@ -37,7 +37,7 @@ export const registerClassification = async (classificationData: any) => {
   }
 };
 
-export const registerAdditionalPhoto = async (photoData: FormData) => {
+export const registerAdditionalPhoto = async (photoData) => {
   try {
     const response = await api.post('/fotos/registrar/', photoData);
     return response.data;

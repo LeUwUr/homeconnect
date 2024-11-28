@@ -1,19 +1,13 @@
 import React, { useState } from 'react';
 
-interface ClassificationFormProps {
-  onPrev: () => void;
-  onSubmit: () => void;
-  updateFormData: (data: any) => void;
-}
-
-const ClassificationForm: React.FC<ClassificationFormProps> = ({ onPrev, onSubmit, updateFormData }) => {
+function ClassificationForm({ onPrev, onSubmit, updateFormData }) {
   const [classification, setClassification] = useState({
     ubicacion: '',
     estado_propiedad: '',
     privada: ''
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setClassification(prev => ({
       ...prev,
@@ -21,7 +15,7 @@ const ClassificationForm: React.FC<ClassificationFormProps> = ({ onPrev, onSubmi
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     updateFormData(classification);
     onSubmit();
@@ -40,9 +34,9 @@ const ClassificationForm: React.FC<ClassificationFormProps> = ({ onPrev, onSubmi
             onChange={handleChange}
           >
             <option value="">Seleccione ubicación</option>
-            <option value="Urbana">Urbana</option>
-            <option value="Rural">Rural</option>
-            <option value="En Fraccionamiento">En Fraccionamiento</option>
+            <option value="urbana">Urbana</option>
+            <option value="suburbana">Suburbana</option>
+            <option value="rural">Rural</option>
           </select>
         </div>
 
@@ -56,11 +50,10 @@ const ClassificationForm: React.FC<ClassificationFormProps> = ({ onPrev, onSubmi
             onChange={handleChange}
           >
             <option value="">Seleccione estado</option>
-            <option value="En negociación">En negociación</option>
-            <option value="Negociada">Negociada</option>
-            <option value="En espera">En espera</option>
-            <option value="Cancelada">Cancelada</option>
-            <option value="Activa">Activa</option>
+            <option value="nueva">Nueva</option>
+            <option value="usada">Usada</option>
+            <option value="remodelada">Remodelada</option>
+            <option value="en_construccion">En Construcción</option>
           </select>
         </div>
 
@@ -74,9 +67,8 @@ const ClassificationForm: React.FC<ClassificationFormProps> = ({ onPrev, onSubmi
             onChange={handleChange}
           >
             <option value="">Seleccione tipo</option>
-            <option value="Cerrada">Cerrada</option>
-            <option value="Abierta">Abierta</option>
-            <option value="No Aplica">No Aplica</option>
+            <option value="si">Privada</option>
+            <option value="no">No Privada</option>
           </select>
         </div>
       </div>
@@ -98,6 +90,6 @@ const ClassificationForm: React.FC<ClassificationFormProps> = ({ onPrev, onSubmi
       </div>
     </form>
   );
-};
+}
 
 export default ClassificationForm;

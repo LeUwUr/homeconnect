@@ -2,17 +2,12 @@ import React, { useState } from 'react';
 import { format } from 'date-fns';
 import { Upload } from 'lucide-react';
 
-interface PropertyFormProps {
-  onNext: () => void;
-  updateFormData: (data: any) => void;
-}
-
-const PropertyForm: React.FC<PropertyFormProps> = ({ onNext, updateFormData }) => {
+function PropertyForm({ onNext, updateFormData }) {
   const [formData, setFormData] = useState({
     usuario: 1,
     titulo: '',
     precio: '',
-    foto_frontal: null as File | null,
+    foto_frontal: null,
     disponibilidad: 'Disponible',
     direccion: '',
     tamano_m2: '',
@@ -20,9 +15,9 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ onNext, updateFormData }) =
     fecha_adquisicion: format(new Date(), 'yyyy-MM-dd')
   });
 
-  const [previewUrl, setPreviewUrl] = useState<string>('');
+  const [previewUrl, setPreviewUrl] = useState('');
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -30,7 +25,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ onNext, updateFormData }) =
     }));
   };
 
-  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoChange = (e) => {
     const file = e.target.files?.[0];
     if (file) {
       setFormData(prev => ({
@@ -43,7 +38,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ onNext, updateFormData }) =
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     updateFormData(formData);
     onNext();
@@ -203,6 +198,6 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ onNext, updateFormData }) =
       </div>
     </form>
   );
-};
+}
 
 export default PropertyForm;
