@@ -19,5 +19,5 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('prestamos.urls')),
+    path('api/', include('solicitudes.urls')),  # Prefijo para las rutas de la API
 ]

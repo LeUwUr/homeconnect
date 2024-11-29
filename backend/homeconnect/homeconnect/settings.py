@@ -37,7 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'prestamos'
+    'rest_framework',
+    'solicitudes',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -76,8 +78,12 @@ WSGI_APPLICATION = 'homeconnect.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'homeconnect',
+        'USER': 'postgres',                 
+        'PASSWORD': 'arighostZ1',          
+        'HOST': 'localhost',                  
+        'PORT': '5432'                       
     }
 }
 
@@ -100,6 +106,12 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+CORS_ALLOW_ALL_ORIGINS = True
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # El puerto de tu React
+    "http://127.0.0.1:3000",
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
