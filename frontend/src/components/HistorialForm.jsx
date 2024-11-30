@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { createHistorial, getHistorialList } from "../services/api"; 
+import { createHistorial, getHistorialList } from "../services/api";
 
 const HistorialForm = () => {
   const [formData, setFormData] = useState({
@@ -10,27 +10,21 @@ const HistorialForm = () => {
   });
 
   const [mensaje, setMensaje] = useState("");
-  const [loading, setLoading] = useState(false); 
-  const [historiales, setHistoriales] = useState([]); 
-  const [search, setSearch] = useState(""); 
-  const [error, setError] = useState(""); // Para mostrar errores
+  const [loading, setLoading] = useState(false);
+  const [historiales, setHistoriales] = useState([]);
+  const [search, setSearch] = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    const storedHistoriales = localStorage.getItem("historiales");
-    if (storedHistoriales) {
-      setHistoriales(JSON.parse(storedHistoriales)); 
-    } else {
-      const loadHistoriales = async () => {
-        try {
-          const fetchedHistoriales = await getHistorialList();
-          setHistoriales(fetchedHistoriales);
-          localStorage.setItem("historiales", JSON.stringify(fetchedHistoriales)); 
-        } catch (error) {
-          console.error("Error al cargar historiales:", error);
-        }
-      };
-      loadHistoriales();
-    }
+    const loadHistoriales = async () => {
+      try {
+        const fetchedHistoriales = await getHistorialList();
+        setHistoriales(fetchedHistoriales);
+      } catch (error) {
+        console.error("Error al cargar historiales:", error);
+      }
+    };
+    loadHistoriales();
   }, []);
 
   const handleChange = (e) => {
@@ -44,17 +38,14 @@ const HistorialForm = () => {
     e.preventDefault();
     setLoading(true);
 
-    // Convertir la solicitud a número
     const solicitudId = parseInt(formData.solicitud, 10);
 
-    // Validación de ID negativo
     if (isNaN(solicitudId) || solicitudId <= 0) {
       setError("El ID de la solicitud debe ser un número positivo.");
       setLoading(false);
       return;
     }
 
-    // Validación de duplicados
     const isDuplicate = historiales.some(
       (historial) => historial.solicitud === solicitudId
     );
@@ -65,14 +56,12 @@ const HistorialForm = () => {
     }
 
     try {
-      // Enviar el historial con solicitudId asegurado como número positivo
       const response = await createHistorial({
         ...formData,
-        solicitud: solicitudId
+        solicitud: solicitudId,
       });
 
       setMensaje(`Historial creado con éxito: ID ${response.id}`);
-      
       setFormData({
         solicitud: "",
         estado_anterior: "",
@@ -80,10 +69,8 @@ const HistorialForm = () => {
         comentarios: "",
       });
 
-      const updatedHistoriales = [...historiales, response];
+      const updatedHistoriales = await getHistorialList();
       setHistoriales(updatedHistoriales);
-      localStorage.setItem("historiales", JSON.stringify(updatedHistoriales));
-
     } catch (error) {
       setMensaje(`Error al crear historial: ${error.message}`);
     } finally {
@@ -97,6 +84,65 @@ const HistorialForm = () => {
 
   return (
     <div className="form-container">
+      <style>
+        {`
+          .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          }
+          .form-title {
+            text-align: center;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+          }
+          .form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+          }
+          .form-group {
+            display: flex;
+            flex-direction: column;
+          }
+          .form-input, .form-textarea, .search-input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+          }
+          .form-button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+          }
+          .form-button:disabled {
+            background-color: #cccccc;
+          }
+          .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+          }
+          .table th, .table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+          }
+          .table th {
+            background-color: #f4f4f4;
+          }
+          .error-message {
+            color: red;
+            font-size: 0.9rem;
+          }
+        `}
+      </style>
+
       <h2 className="form-title">Crear Historial de Solicitud</h2>
       <form onSubmit={handleSubmit} className="form">
         <div className="form-group">
@@ -189,109 +235,6 @@ const HistorialForm = () => {
           </table>
         )}
       </div>
-
-      <style jsx>{`
-        .form-container {
-          background-color: #f9f9f9;
-          padding: 20px;
-          border-radius: 8px;
-          max-width: 600px;
-          margin: 20px auto;
-          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-
-        .form-title {
-          font-size: 24px;
-          font-weight: bold;
-          margin-bottom: 20px;
-          text-align: center;
-        }
-
-        .form-group {
-          margin-bottom: 15px;
-        }
-
-        .form-label {
-          display: block;
-          margin-bottom: 5px;
-          font-weight: bold;
-        }
-
-        .form-input,
-        .form-textarea {
-          width: 100%;
-          padding: 8px;
-          border: 1px solid #ddd;
-          border-radius: 4px;
-          font-size: 16px;
-        }
-
-        .form-textarea {
-          height: 100px;
-        }
-
-        .form-button {
-          background-color: #4CAF50;
-          color: white;
-          padding: 10px 15px;
-          border: none;
-          border-radius: 4px;
-          cursor: pointer;
-          font-size: 16px;
-        }
-
-        .form-button:disabled {
-          background-color: #ccc;
-        }
-
-        .form-message {
-          margin-top: 10px;
-          font-size: 14px;
-          color: green;
-          text-align: center;
-        }
-
-        .error-message {
-          color: red;
-          font-size: 14px;
-          margin-top: 5px;
-        }
-
-        .historial-list {
-          margin-top: 30px;
-        }
-
-        .table {
-          width: 100%;
-          border-collapse: collapse;
-          margin-top: 10px;
-        }
-
-        .table th,
-        .table td {
-          padding: 12px;
-          border: 1px solid #ddd;
-          text-align: left;
-        }
-
-        .table th {
-          background-color: #f4f4f4;
-          font-weight: bold;
-        }
-
-        .filter-container {
-          margin-bottom: 20px;
-          text-align: center;
-        }
-
-        .search-input {
-          padding: 8px;
-          width: 200px;
-          border-radius: 4px;
-          border: 1px solid #ddd;
-          font-size: 16px;
-        }
-      `}</style>
     </div>
   );
 };
