@@ -1,35 +1,126 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Lista de Propiedades</title>
-        {% load static %} <!-- Cargar archivos estáticos -->
-        <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    </head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Propiedades</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        a {
+            margin: 10px;
+            display: inline-block;
+            text-decoration: none;
+            color: #007bff;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .propiedades {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .propiedad {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .propiedad h2 {
+            font-size: 20px;
+            color: #007bff;
+        }
+
+        .propiedad p {
+            font-size: 16px;
+            color: #555;
+            margin: 5px 0;
+        }
+
+        .ofertas {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f1f1f1;
+            border-radius: 5px;
+        }
+
+        .ofertas ul {
+            padding-left: 20px;
+        }
+
+        .ofertas li {
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .acciones {
+            margin-top: 10px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .acciones a {
+            color: white;
+            text-decoration: none;
+        }
+    </style>
+</head>
 <body>
-    <h1>Propiedades en Venta [Agente de ventas]</h1>
-    <h2>Bienvenida: {{ usuario.nombre }}</h2> 
+    <h1>Propiedades en Venta [Agente de Ventas]</h1>
+    <h2>Agente: {{ usuario.nombre }}</h2> 
+    <div style="text-align: center;">
+        <a href="{% url 'lista_conversaciones' %}">Conversaciones</a>
+        <a href="{% url 'logout' %}">Cerrar sesión</a>
+    </div>
+
     <div class="propiedades">
         {% for propiedad in propiedades %}
         <div class="propiedad">
             <h2>{{ propiedad.titulo }}</h2>
             <p><strong>Ubicación:</strong> {{ propiedad.direccion }}</p>
-            <p><strong>Precio original:</strong> ${{ propiedad.precio }}</p>
-        
-            <p><strong>Precio con oferta:</strong> $
-                {{ propiedad.precio_con_descuento|floatformat:2 }}
-            </p>
+            <p><strong>Precio original:</strong> ${{ propiedad.precio|floatformat:2 }} MXN</p>
+            <p><strong>Precio con oferta:</strong> ${{ propiedad.precio_con_descuento|floatformat:2 }} MXN</p>
+            <p><strong>Agente de venta:</strong> {{ propiedad.usuario.nombre }}</p>
 
-            <p><strong>Agente de venta: </strong>{{propiedad.usuario.nombre}}</p>
-        
-            <!-- Muestra las ofertas existentes -->
+            <!-- Sección de Ofertas -->
             <div class="ofertas">
                 <h3>Ofertas:</h3>
-                {% if propiedad.ofertas.all %}
+                {% if propiedad.ofertas.exists %}
                     <ul>
                         {% for oferta in propiedad.ofertas.all %}
-                            <li>{{ oferta.descuento }}% de descuento - {{ oferta.descripcion }}
+                            <li>
+                                {{ oferta.descuento }}% de descuento - {{ oferta.descripcion }}<br>
                                 <a href="{% url 'editar_oferta' oferta.id %}">Editar</a> | 
                                 <a href="{% url 'eliminar_oferta' oferta.id %}">Eliminar</a>
                             </li>
@@ -40,12 +131,14 @@
                 {% endif %}
             </div>
 
-            <!-- Botón para agregar una oferta solo si no hay ofertas -->
-            {% if not propiedad.ofertas.all %}
-                <form action="{% url 'agregar_oferta' propiedad.id %}" method="get">
-                    <button type="submit">Agregar Oferta</button>
-                </form>
-            {% endif %}
+            <!-- Botón para agregar una oferta -->
+            <div class="acciones">
+                {% if not propiedad.ofertas.all %}
+                    <form action="{% url 'agregar_oferta' propiedad.id %}" method="get" style="display: inline-block;">
+                        <button type="submit">Agregar Oferta</button>
+                    </form>
+                {% endif %}
+            </div>
         </div>
         {% endfor %}
     </div>

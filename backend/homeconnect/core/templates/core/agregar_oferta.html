@@ -1,28 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Lista de Propiedades</title>
-        {% load static %} <!-- Cargar archivos estáticos -->
-        <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    </head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agregar Oferta a {{ propiedad.nombre }}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        input, textarea {
+            width: 80%;  /* Reducido el ancho */
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            background-color: #f9f9f9;
+            color: #333;
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 80%; /* Botón también más angosto */
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #007bff;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+    </style>
+</head>
 <body>
-    <h1>Agregar Oferta a {{ propiedad.nombre }}</h1>
+    <div class="container">
+        <h1>Agregar Oferta a {{ propiedad.nombre }}</h1>
 
-    <form action="{% url 'guardar_oferta' propiedad.id %}" method="post">
-        {% csrf_token %}
-        <div>
-            <label for="descuento">Descuento (%):</label>
-            <input type="number" id="descuento" name="descuento" required>
-        </div>
-        <div>
-            <label for="descripcion">Descripción:</label>
-            <textarea id="descripcion" name="descripcion" rows="4" required></textarea>
-        </div>
-        <button type="submit">Guardar Oferta</button>
-    </form>
+        <form action="{% url 'guardar_oferta' propiedad.id %}" method="post">
+            {% csrf_token %}
+            <div>
+                <label for="descuento">Descuento (%):</label>
+                <input type="number" id="descuento" name="descuento" required min="1" max="99">
+            </div>
+            <div>
+                <label for="descripcion">Descripción:</label>
+                <textarea id="descripcion" name="descripcion" rows="4" required></textarea>
+            </div>
+            <button type="submit">Guardar Oferta</button>
+        </form>
 
-    <a href="{% url 'lista_propiedades' %}">Volver a la Lista de Propiedades</a>
+        <a href="{% url 'lista_propiedades' %}">Volver a la Lista de Propiedades</a>
+    </div>
 </body>
 </html>

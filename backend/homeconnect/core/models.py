@@ -1,26 +1,49 @@
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
+from django.conf import settings
 
-class Usuario(models.Model):
-    COMPRADOR = 'Comprador'
-    ADMINISTRADOR = 'Administrador'
+class UsuarioManager(BaseUserManager):
+    def create_user(self, correo_electronico, nombre, contrasena=None, **extra_fields):
+        if not correo_electronico:
+            raise ValueError('El correo electrónico es obligatorio')
+        correo_electronico = self.normalize_email(correo_electronico)
+        extra_fields.setdefault('is_active', True)
+        user = self.model(correo_electronico=correo_electronico, nombre=nombre, **extra_fields)
+        user.set_password(contrasena)
+        user.save(using=self._db)
+        return user
 
-    TIPOS_USUARIO = [
-        (COMPRADOR, 'Comprador'),
-        (ADMINISTRADOR, 'Administrador'),
-    ]
+    def create_superuser(self, correo_electronico, nombre, contrasena=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        return self.create_user(correo_electronico, nombre, contrasena, **extra_fields)
 
+class Usuario(AbstractBaseUser, PermissionsMixin):
+    usuario_id = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=255)
     correo_electronico = models.EmailField(unique=True)
     telefono = models.CharField(max_length=20, blank=True, null=True)
-    tipo_usuario = models.CharField(max_length=15, choices=TIPOS_USUARIO)
-    contrasena = models.CharField(max_length=255)
+    tipo_usuario = models.CharField(
+        max_length=20,
+        choices=[('Comprador', 'Comprador'), ('Administrador', 'Administrador')],
+    )
+    contrasena = models.CharField(max_length=255)  # No se usará directamente
     fecha_registro = models.DateTimeField(auto_now_add=True)
     eliminado = models.BooleanField(default=False)
+
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+
+    objects = UsuarioManager()
+
+    USERNAME_FIELD = 'correo_electronico'
+    REQUIRED_FIELDS = ['nombre']
+
     class Meta:
         db_table = 'usuarios'
-    def __str__(self):
-        return self.nombre
 
+    def __str__(self):
+        return self.correo_electronico
 
 class Propiedad(models.Model):
     titulo = models.CharField(max_length=255)
@@ -42,8 +65,6 @@ class Propiedad(models.Model):
     def __str__(self):
         return self.titulo
 
-
-
 class Oferta(models.Model):
     propiedad = models.ForeignKey('Propiedad', on_delete=models.CASCADE, related_name='ofertas')
     descuento = models.DecimalField(max_digits=5, decimal_places=2, null=False, default=0.00)
@@ -63,69 +84,35 @@ class Oferta(models.Model):
         db_table = 'ofertas'
 
 
-class Alerta(models.Model):
-    ESTADOS_ALERTA = [
-        ('no_leida', 'No Leída'),
-        ('leida', 'Leída'),
-        ('archivada', 'Archivada'),
-    ]
-
-    tipo_alerta = models.CharField(max_length=50)
-    mensaje = models.TextField()
-    fecha_alerta = models.DateTimeField(auto_now_add=True)
-    estado = models.CharField(max_length=20, choices=ESTADOS_ALERTA, default='no_leida')
-    usuario = models.ForeignKey(
-        'Usuario',  # Relaciona con el modelo de usuario existente en tu sistema.
-        on_delete=models.CASCADE,
-        related_name='alertas'
+class Conversacion(models.Model):
+    comprador = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE, 
+        related_name='conversaciones_comprador'
     )
-    propiedad = models.ForeignKey(
-        'Propiedad',  # Relaciona con el modelo de propiedades.
-        on_delete=models.CASCADE,
-        blank=True,
-        null=True,
-        related_name='alertas'
+    agente = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE, 
+        related_name='conversaciones_agente'
     )
-    cita = models.ForeignKey(
-        'Cita',  # Relaciona con el modelo de citas.
-        on_delete=models.CASCADE,
-        blank=True,
-        null=True,
-        related_name='alertas'
-    )
+    propiedad = models.ForeignKey('Propiedad', on_delete=models.CASCADE)  
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        db_table = 'alertas'
+        db_table = 'conversaciones'
 
     def __str__(self):
-        return f"{self.tipo_alerta} - {self.usuario.nombre}"
+        return f"Conversación entre {self.comprador} y {self.agente} sobre {self.propiedad.titulo}"
 
-
-class Cita(models.Model):
-    ESTADOS_CITA = [
-        ('pendiente', 'Pendiente'),
-        ('confirmada', 'Confirmada'),
-        ('cancelada', 'Cancelada'),
-        ('completada', 'Completada'),
-    ]
-
-    propiedad = models.ForeignKey(
-        'Propiedad',  # Relaciona con el modelo de propiedades.
-        on_delete=models.CASCADE,
-        related_name='citas'
-    )
-    cliente = models.ForeignKey(
-        'Usuario',  # Usuario interesado en la propiedad (rol: comprador).
-        on_delete=models.CASCADE,
-        related_name='citas'
-    )
-    fecha = models.DateField()
-    hora = models.TimeField()
-    estado = models.CharField(max_length=20, choices=ESTADOS_CITA, default='pendiente')
-    observaciones = models.TextField(blank=True, null=True)  # Detalles adicionales sobre la cita.
+class Mensaje(models.Model):
+    conversacion = models.ForeignKey(Conversacion, on_delete=models.CASCADE, related_name='mensajes')
+    remitente = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    texto = models.TextField()
+    fecha_envio = models.DateTimeField(auto_now_add=True)
+    visto = models.BooleanField(default=False)
 
     class Meta:
-        db_table = 'citas'
+        db_table = 'mensajes'
 
     def __str__(self):
-        return f"Cita para {self.propiedad.titulo} con {self.cliente.nombre} el {self.fecha} a las {self.hora}"
+        return f"Mensaje de {self.remitente} en {self.fecha_envio.strftime('%Y-%m-%d %H:%M:%S')}"
