@@ -159,27 +159,35 @@ const HistorialForm = () => {
           {error && <p className="error-message">{error}</p>}
         </div>
         <div className="form-group">
-          <label htmlFor="estado_anterior">Estado Anterior:</label>
-          <input
-            type="text"
-            name="estado_anterior"
-            value={formData.estado_anterior}
-            onChange={handleChange}
-            required
-            className="form-input"
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="estado_nuevo">Estado Nuevo:</label>
-          <input
-            type="text"
-            name="estado_nuevo"
-            value={formData.estado_nuevo}
-            onChange={handleChange}
-            required
-            className="form-input"
-          />
-        </div>
+  <label htmlFor="estado_anterior">Estado Anterior:</label>
+    <select
+      name="estado_anterior"
+      value={formData.estado_anterior}
+      onChange={handleChange}
+      required
+      className="form-input"
+    >
+    <option value="" disabled>Seleccione un estado</option>
+    <option value="pendiente">Pendiente</option>
+    <option value="aprobada">Aprobada</option>
+      <option value="rechazada">Rechazada</option>
+    </select>
+  </div>
+  <div className="form-group">
+    <label htmlFor="estado_nuevo">Estado Nuevo:</label>
+    <select
+      name="estado_nuevo"
+      value={formData.estado_nuevo}
+      onChange={handleChange}
+      required
+      className="form-input"
+    >
+      <option value="" disabled>Seleccione un estado</option>
+      <option value="pendiente">Pendiente</option>
+      <option value="aprobada">Aprobada</option>
+      <option value="rechazada">Rechazada</option>
+    </select>
+  </div>
         <div className="form-group">
           <label htmlFor="comentarios">Comentarios:</label>
           <textarea
