@@ -1,0 +1,47 @@
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.db import models
+
+class UsuarioManager(BaseUserManager):
+    def create_user(self, correo_electronico, nombre, contrasena=None, **extra_fields):
+        if not correo_electronico:
+            raise ValueError('El correo electrónico es obligatorio')
+        correo_electronico = self.normalize_email(correo_electronico)
+        extra_fields.setdefault('is_active', True)
+        user = self.model(correo_electronico=correo_electronico, nombre=nombre, **extra_fields)
+        user.set_password(contrasena)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, correo_electronico, nombre, contrasena=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        return self.create_user(correo_electronico, nombre, contrasena, **extra_fields)
+
+class Usuario(AbstractBaseUser, PermissionsMixin):
+    usuario_id = models.AutoField(primary_key=True)
+    nombre = models.CharField(max_length=255)
+    correo_electronico = models.EmailField(unique=True)
+    telefono = models.CharField(max_length=20, blank=True, null=True)
+    tipo_usuario = models.CharField(
+        max_length=20,
+        choices=[('Comprador', 'Comprador'), ('Administrador', 'Administrador')],
+    )
+    contrasena = models.CharField(max_length=255)  # No se usará directamente
+    fecha_registro = models.DateTimeField(auto_now_add=True)
+    eliminado = models.BooleanField(default=False)
+
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+
+    objects = UsuarioManager()
+
+    USERNAME_FIELD = 'correo_electronico'
+    REQUIRED_FIELDS = ['nombre']
+
+    class Meta:
+        db_table = 'usuarios'
+
+    def __str__(self):
+        return self.correo_electronico
+
+
