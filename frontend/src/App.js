@@ -6,9 +6,11 @@ import RegisterClient from "./components/RegisterClient";
 import RegisterAgent from "./components/RegisterAgent";
 import Home from "./components/Home";
 import Inicio from "./components/Inicio";
+import FrontCatalog from "./components/FrontCatalog";
 
 
 function App() {
+
   return (
     <Router>
       <Routes>
@@ -29,6 +31,8 @@ function App() {
 
           {/* Ruta para Home */}
         <Route path="/inicio" element={<Inicio />} />
+
+        <Route path="/front-catalog" element={<FrontCatalog />} />
       </Routes>
     </Router>
   );
