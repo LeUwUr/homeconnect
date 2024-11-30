@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tus Conversaciones</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .conversaciones {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .conversacion {
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .conversacion:last-child {
+            border-bottom: none;
+        }
+
+        .conversacion a {
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
+        }
+
+        .conversacion a:hover {
+            text-decoration: underline;
+        }
+
+        .ultimo-mensaje {
+            font-size: 14px;
+            color: #555;
+            margin-top: 5px;
+        }
+
+        .fecha {
+            font-size: 12px;
+            color: #999;
+            text-align: right;
+        }
+
+        a.volver {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        a.volver:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tus Conversaciones</h1>
+
+    <div class="conversaciones">
+        {% for conversacion in conversaciones %}
+            <div class="conversacion">
+                <div>
+                    <a href="{% url 'detalle_conversacion' conversacion.pk %}">
+                        {{ conversacion.propiedad.titulo }} - {{ conversacion.agente.nombre }}
+                    </a>
+                    <p class="ultimo-mensaje">
+                        {% with conversacion.mensajes.last as ultimo_mensaje %}
+                            {{ ultimo_mensaje.texto|truncatechars:50 }}
+                        {% endwith %}
+                    </p>
+                </div>
+                <div class="fecha">
+                    {% with conversacion.mensajes.last as ultimo_mensaje %}
+                        {{ ultimo_mensaje.fecha_envio|date:"d M Y H:i" }}
+                    {% endwith %}
+                </div>
+            </div>
+        {% empty %}
+            <p>No tienes conversaciones aún.</p>
+        {% endfor %}
+    </div>
+
+    <a href="{% url 'lista_propiedades' %}" class="volver">Volver al inicio</a>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat con {{ conversacion.agente.nombre }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .mensajes {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .mensaje {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 14px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .mensaje-propio {
+            background-color: #d1e7dd; /* Verde claro */
+            text-align: right;
+            margin-left: auto;
+            max-width: 70%;
+        }
+
+        .mensaje-otro {
+            background-color: #f8d7da; /* Rojo claro */
+            text-align: left;
+            margin-right: auto;
+            max-width: 70%;
+        }
+
+        .mensaje span {
+            font-size: 12px;
+            color: #555;
+        }
+
+        form {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        .visto {
+            color: #28a745;  /* Verde para los mensajes vistos */
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .nuevo-mensaje {
+            color: #dc3545;  /* Rojo para los mensajes nuevos */
+            font-weight: bold;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Chat con {{ conversacion.agente.nombre }}</h1>
+
+    <div class="mensajes">
+        {% for mensaje in mensajes %}
+            <div class="mensaje {% if mensaje.remitente == request.user %}mensaje-propio{% else %}mensaje-otro{% endif %}">
+                <p><strong>{{ mensaje.remitente.nombre }}:</strong> {{ mensaje.texto }}</p>
+                <span>{{ mensaje.fecha_envio }}</span>
+    
+                <!-- Mostrar si el mensaje fue visto -->
+                {% if mensaje.visto %}
+                    <span class="visto">Visto</span>
+                {% else %}
+                    <span class="nuevo-mensaje">Nuevo</span>  <!-- Nuevo mensaje -->
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Enviar</button>
+    </form>
+
+    <a href="{% url 'lista_conversaciones' %}">Volver a las conversaciones</a>
+</body>
+</html>
