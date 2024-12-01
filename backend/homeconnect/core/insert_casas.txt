@@ -1,0 +1,20 @@
+from core.models import Propiedad, Usuario
+
+propiedad = Propiedad.objects.create(
+    titulo='Casa en el centro',
+    precio=250000.00,
+    direccion='Calle Principal 123',
+    disponibilidad='Disponible',
+    tamano_m2=150.00,
+    estado='Nueva',
+    fecha_adquisicion='2023-11-27',
+    usuario=2
+)
+
+print(f"Propiedad {propiedad.titulo} creada exitosamente.")
+
+
+insert into public.propiedades values
+(4,'Casa4',123456.00,'foto4.png','Disponible','Calle Real de la Ermita',150.00,'Nueva','11-02-2005',null,'27-11-2024',False,3),
+(5,'Casa5',750850.00,'foto5.png','Disponible','Calle Real del Bosque',128.00,'Nueva','30-10-2001',null,'27-11-2024',False,3),
+(6,'Casa6',100422.00,'foto6.png','Disponible','Calle Real de Otay',121.00,'Nueva','25-02-1995',null,'27-11-2024',False,3)

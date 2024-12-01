@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Propiedades en Venta</title>
+    {% load static humanize %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        a {
+            display: inline-block;
+            margin: 10px 0;
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
+            text-align: center;
+            width: 100%;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .propiedades {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .propiedad {
+            width: 300px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .propiedad h2 {
+            font-size: 20px;
+            color: #007bff;
+            margin: 0 0 10px 0;
+        }
+
+        .propiedad p {
+            margin: 5px 0;
+            color: #555;
+        }
+
+        .propiedad p strong {
+            color: #333;
+        }
+
+        form {
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            background-color: #fff;
+            padding: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+
+        .navbar a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .navbar a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h2>Cliente: {{ usuario.nombre }}</h2>
+        <div>
+            <a href="{% url 'lista_conversaciones' %}">Conversaciones</a> |
+            <a href="{% url 'logout' %}">Cerrar sesión</a>
+        </div>
+    </div>
+
+    <h1>Propiedades en Venta</h1>
+
+    <div class="propiedades">
+        {% for propiedad in propiedades %}
+        <div class="propiedad">
+            <h2>{{ propiedad.titulo }}</h2>
+            <p><strong>Ubicación:</strong> {{ propiedad.direccion }}</p>
+            <p><strong>Precio original:</strong> ${{ propiedad.precio|intcomma }} MXN</p>
+
+            {% if propiedad.ofertas.exists %}
+                <p><strong>Precio con oferta:</strong> ${{ propiedad.precio_con_descuento|intcomma }} MXN</p>
+            {% else %}
+                <p>No hay ofertas disponibles para esta propiedad.</p>
+            {% endif %}
+
+            <p><strong>Agente de venta:</strong> {{ propiedad.usuario.nombre }}</p>
+
+            <!-- Botón para abrir el chat -->
+            <form action="{% url 'abrir_chat' propiedad.id %}" method="post">
+                {% csrf_token %}
+                <button type="submit">Abrir Chat</button>
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

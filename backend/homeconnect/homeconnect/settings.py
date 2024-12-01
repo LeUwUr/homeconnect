@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,12 +26,21 @@ SECRET_KEY = 'django-insecure-+=^6v$bxkf=y3&+)y^lnfi2w4kw06=^0!2mpq7v$s*tkxy^at_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    'localhost',
+    'http://localhost:5173',
+]
+
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'rest_framework',
+    'corsheaders',
+    'clientes',
+    'propiedades',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -39,6 +49,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'solicitudes',
+    'moduloac',
+    'core',
+    'moduloi',
+    'rest_framework',
+    'rest_framework.authtoken',
     'corsheaders',
 ]
 
@@ -54,6 +69,25 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'homeconnect.urls'
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # Dirección del frontend
+]
+
+CORS_ALLOW_HEADERS = [
+    "content-type",
+    "authorization",
+]
+
+CORS_ALLOW_METHODS = [
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+]
+
 
 TEMPLATES = [
     {
@@ -80,11 +114,11 @@ WSGI_APPLICATION = 'homeconnect.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'homeconnect',
-        'USER': 'postgres',                 
-        'PASSWORD': 'arighostZ1',          
-        'HOST': 'localhost',                  
-        'PORT': '5432'                       
+        'NAME': 'homeconnect',  # Nombre de tu base de datos
+        'USER': 'postgres',     # Usuario de PostgreSQL
+        'PASSWORD': '',  # Contraseña de tu usuario
+        'HOST': 'localhost',    # Dirección del servidor
+        'PORT': '5432',         # Puerto por defecto de PostgreSQL
     }
 }
 
@@ -134,3 +168,15 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+}
+
+MEDIA_URL = '/media/' 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+CORS_ALLOW_ALL_ORIGINS = True

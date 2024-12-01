@@ -1,0 +1,52 @@
+from core.models import Usuario
+
+# Crear un usuario
+usuario = Usuario.objects.create_user(
+    correo_electronico='eva@gmail.com',
+    nombre='Eva Aguirre',
+    contrasena='evina159',  # Se encriptará automáticamente
+    tipo_usuario='Administrador',
+    telefono='6641857496'
+)
+
+# Guardar en la base de datos
+usuario.save()
+
+print(f"Usuario {usuario.nombre} creado exitosamente.")
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+from core.models import Usuario
+
+# Crear un usuario
+usuario = Usuario.objects.create_user(
+    correo_electronico='hector@gmail.com',
+    nombre='Hector Acosta',
+    contrasena='gokudeidad777',  # Se encriptará automáticamente
+    tipo_usuario='Administrador',
+    telefono='6637531445'
+)
+
+# Guardar en la base de datos
+usuario.save()
+
+print(f"Usuario {usuario.nombre} creado exitosamente.")
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+from core.models import Usuario
+
+# Crear un usuario
+usuario = Usuario.objects.create_user(
+    correo_electronico='reyes@gmail.com',
+    nombre='Jorge Reyes',
+    contrasena='reyesgoat',  # Se encriptará automáticamente
+    tipo_usuario='Comprador',
+    telefono='6642128558'
+)
+
+# Guardar en la base de datos
+usuario.save()
+
+print(f"Usuario {usuario.nombre} creado exitosamente.")
+
