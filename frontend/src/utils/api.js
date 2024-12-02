@@ -10,6 +10,24 @@ export const api = axios.create({
   }
 });
 
+// Property endpoints
+export const getProperties = () => api.get('/propiedades/');
+export const getPropertyDetails = (id) => api.get(`/propiedades/fullinfo/${id}/`);
+export const createProperty = (data) => api.post('/propiedades/fullcreate/', data);
+export const updateProperty = (id, data) => api.put(`/propiedades/${id}/update/`, data);
+
+// Classification endpoints
+export const updateClassification = (id, data) => api.put(`/clasificaciones/${id}/actualizar/`, data);
+
+// Services endpoints
+export const updateServices = (id, data) => api.put(`/servicios/${id}/actualizar/`, data);
+
+// Photos endpoints
+export const addPhoto = (data) => api.post('/fotos/registrar/', data);
+export const updatePhoto = (id, data) => api.put(`/fotos/${id}/actualizar/`, data);
+export const deletePhoto = (id) => api.delete(`/fotos/${id}/eliminar/`);
+
+
 export const registerProperty = async (propertyData) => {
   try {
     const response = await api.post('/propiedades/create/', propertyData);

@@ -8,10 +8,6 @@ function PropertyDetail({ propertyId, onClose }) {
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(null);
 
-  const handleClick = () => {
-    window.open('/cargarArchivos.html', '_blank', 'noopener noreferrer');
-  };
-
   useEffect(() => {
     const fetchDetails = async () => {
       try {
@@ -81,38 +77,35 @@ function PropertyDetail({ propertyId, onClose }) {
               <h2 className="text-2xl font-bold text-gray-900">{details.propiedad.titulo}</h2>
             </div>
 
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-4">
                 <img
-                  src={'http://127.0.0.1:8000/moduloac' + selectedImage}
+                  src={'http://127.0.0.1:8000/moduloac'+selectedImage}
                   alt={details.propiedad.titulo}
                   className="w-full h-64 object-cover rounded-lg"
                 />
-                <button className="App-link font-bold" onClick={handleClick}>
-                  Documentos de la propiedad
-                </button>
-
+                
                 {details.fotos_adicionales.length > 0 && (
                   <div className="grid grid-cols-4 gap-2">
                     <img
-                      src={'http://127.0.0.1:8000/moduloac' + details.propiedad.foto_frontal}
+                      src={'http://127.0.0.1:8000/moduloac'+details.propiedad.foto_frontal}
                       alt="Frontal"
-                      className={`w-full h-20 object-cover rounded cursor-pointer ${selectedImage === details.propiedad.foto_frontal ? 'ring-2 ring-indigo-500' : ''
-                        }`}
+                      className={`w-full h-20 object-cover rounded cursor-pointer ${
+                        selectedImage === details.propiedad.foto_frontal ? 'ring-2 ring-indigo-500' : ''
+                      }`}
                       onClick={() => setSelectedImage(details.propiedad.foto_frontal)}
                     />
                     {details.fotos_adicionales.map(foto => (
                       <img
                         key={foto.id}
-                        src={'http://127.0.0.1:8000/moduloac' + foto.url_foto}
+                        src={'http://127.0.0.1:8000/moduloac'+foto.url_foto}
                         alt={`Adicional ${foto.id}`}
-                        className={`w-full h-20 object-cover rounded cursor-pointer ${selectedImage === foto.url_foto ? 'ring-2 ring-indigo-500' : ''
-                          }`}
+                        className={`w-full h-20 object-cover rounded cursor-pointer ${
+                          selectedImage === foto.url_foto ? 'ring-2 ring-indigo-500' : ''
+                        }`}
                         onClick={() => setSelectedImage(foto.url_foto)}
                       />
                     ))}
-
                   </div>
                 )}
               </div>

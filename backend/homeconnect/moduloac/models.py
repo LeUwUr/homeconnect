@@ -1,8 +1,8 @@
 from django.db import models
-from django.contrib.auth.models import User  # Importar el modelo User
+from django.contrib.auth import get_user_model
 
 class Propiedad(models.Model):
-    usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='propiedades')
+    usuario = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='propiedades')
     titulo = models.CharField(max_length=191)
     precio = models.DecimalField(max_digits=10, decimal_places=2)
     foto_frontal = models.ImageField(upload_to='propiedades/fotos_frontal/', blank=True, null=True) 

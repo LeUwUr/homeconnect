@@ -34,9 +34,9 @@ function ClassificationForm({ onPrev, onSubmit, updateFormData }) {
             onChange={handleChange}
           >
             <option value="">Seleccione ubicación</option>
-            <option value="urbana">Urbana</option>
-            <option value="suburbana">Suburbana</option>
-            <option value="rural">Rural</option>
+            <option value="Urbana">Urbana</option>
+            <option value="Rural">Rural</option>
+            <option value="En Fraccionamiento">En Fraccionamiento</option>
           </select>
         </div>
 
@@ -50,10 +50,11 @@ function ClassificationForm({ onPrev, onSubmit, updateFormData }) {
             onChange={handleChange}
           >
             <option value="">Seleccione estado</option>
-            <option value="nueva">Nueva</option>
-            <option value="usada">Usada</option>
-            <option value="remodelada">Remodelada</option>
-            <option value="en_construccion">En Construcción</option>
+            <option value="En negociación">En negociación</option>
+            <option value="Negociada">Negociada</option>
+            <option value="En espera">En espera</option>
+            <option value="Cancelada">Cancelada</option>
+            <option value="Activa">Activa</option>
           </select>
         </div>
 
@@ -67,8 +68,9 @@ function ClassificationForm({ onPrev, onSubmit, updateFormData }) {
             onChange={handleChange}
           >
             <option value="">Seleccione tipo</option>
-            <option value="si">Privada</option>
-            <option value="no">No Privada</option>
+            <option value="Cerrada">Cerrada</option>
+            <option value="Abierta">Abierta</option>
+            <option value="No Aplica">No Aplica</option>
           </select>
         </div>
       </div>

@@ -3,8 +3,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from .models import Propiedad, Usuario, Oferta, Conversacion, Mensaje
+from .models import Usuario, Oferta, Conversacion, Mensaje
 from .forms import OfertaForm, MensajeForm
+from moduloac.models import Propiedad
 
 
 def login_view(request):

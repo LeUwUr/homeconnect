@@ -16,7 +16,14 @@ class UsuarioManager(BaseUserManager):
     def create_superuser(self, correo_electronico, nombre, contrasena=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
+
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError('El superusuario debe tener is_staff=True.')
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError('El superusuario debe tener is_superuser=True.')
+
         return self.create_user(correo_electronico, nombre, contrasena, **extra_fields)
+
 
 class Usuario(AbstractBaseUser, PermissionsMixin):
     usuario_id = models.AutoField(primary_key=True)
@@ -44,29 +51,16 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.correo_electronico
+    
+    def get_full_name(self):
+        return self.nombre
 
-class Propiedad(models.Model):
-    titulo = models.CharField(max_length=255)
-    precio = models.DecimalField(max_digits=10, decimal_places=2)
-    foto_frontal = models.TextField(blank=True, null=True)
-    disponibilidad = models.CharField(max_length=50, blank=True, null=True)
-    direccion = models.CharField(max_length=255)
-    tamano_m2 = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    estado = models.CharField(max_length=50, blank=True, null=True)
-    fecha_adquisicion = models.DateField(blank=True, null=True)
-    fecha_venta = models.DateField(blank=True, null=True)
-    fecha_publicacion = models.DateField(blank=True, null=True)
-    eliminado = models.BooleanField(default=False)
-    usuario = models.ForeignKey('Usuario', on_delete=models.SET_NULL, null=True, blank=True)
+    def get_short_name(self):
+        return self.nombre
 
-    class Meta:
-        db_table = 'propiedades'
-
-    def __str__(self):
-        return self.titulo
 
 class Oferta(models.Model):
-    propiedad = models.ForeignKey('Propiedad', on_delete=models.CASCADE, related_name='ofertas')
+    propiedad = models.ForeignKey('moduloac.Propiedad', on_delete=models.CASCADE, related_name='ofertas')
     descuento = models.DecimalField(max_digits=5, decimal_places=2, null=False, default=0.00)
     descripcion = models.TextField(default='La oferta se cerrará dentro de poco',null=False)
     precio_ofrecido = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)  
@@ -95,7 +89,7 @@ class Conversacion(models.Model):
         on_delete=models.CASCADE, 
         related_name='conversaciones_agente'
     )
-    propiedad = models.ForeignKey('Propiedad', on_delete=models.CASCADE)  
+    propiedad = models.ForeignKey('moduloac.Propiedad', on_delete=models.CASCADE)  
     fecha_creacion = models.DateTimeField(auto_now_add=True)
 
     class Meta:
