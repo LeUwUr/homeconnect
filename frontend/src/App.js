@@ -15,6 +15,25 @@ import PropertyList from './pages/admin/PropertyList';
 import PropertyForm from './pages/admin/PropertyForm';
 import PropertyEdit from './pages/admin/PropertyEdit';
 import PropertyView from './pages/admin/PropertyView';
+import Login from "./components/Login";
+import SelectRegister from "./components/SelectRegister";
+import RegisterClient from "./components/RegisterClient";
+import RegisterAgent from "./components/RegisterAgent";
+import Inicio from "./components/Inicio";
+import FrontCatalog from "./components/FrontCatalog";
+import SimuladorPrestamos from './components/SimuladorPrestamos';
+import SolicitudesForm from './components/SolicitudesForm';
+import HistorialForm from './components/HistorialForm';
+
+// Componente de bienvenida (Home)
+const Home = () => {
+  return (
+    <div>
+      <h2>Bienvenido al sistema</h2>
+      <p>Selecciona una opción del menú para continuar.</p>
+    </div>
+  );
+};
 
 function App() {
   return (
@@ -26,6 +45,20 @@ function App() {
           <Route path="catalog" element={<PropertyCatalog />} />
           <Route path="property/:id" element={<PropertyDetails />} />
         </Route>
+        {/* Ruta principal donde aparece un mensaje de bienvenida */}
+        <Route path="/" element={<Home />} />
+
+        {/* Ruta para el formulario de solicitudes */}
+        <Route path="/solicitudes" element={<SolicitudesForm />} />
+
+        {/* Ruta para el formulario de historial */}
+        <Route path="/historial" element={<HistorialForm />} />
+
+        {/* Ruta exclusiva para el simulador de préstamos */}
+        <Route path="/simulador-prestamos" element={<SimuladorPrestamos />} />
+
+        {/* Ruta de inicio de sesión */}
+        <Route path="/login" element={<Login />} />
 
         {/* Admin Routes */}
         <Route path="/admin" element={<AdminLayout />}>
