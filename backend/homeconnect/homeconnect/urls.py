@@ -23,7 +23,7 @@ urlpatterns = [
     path('clientes/', include('clientes.urls')),  # Rutas de clientes
     path('propiedades/', include('propiedades.urls')),  # Rutas de propiedades
     path('moduloac/', include('moduloac.urls')),
-    path('moduloi/', include('moduloi.urls')),
+    #path('moduloi/', include('moduloi.urls')),
     path('core/', include('core.urls')),
 ]
 

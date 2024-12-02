@@ -1,4 +1,5 @@
-from core.models import Propiedad, Usuario
+from core.models import Usuario
+from moduloac.models import Propiedad
 
 propiedad = Propiedad.objects.create(
     titulo='Casa en el centro',
