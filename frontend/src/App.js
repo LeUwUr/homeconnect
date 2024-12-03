@@ -20,33 +20,16 @@ import SelectRegister from "./components/SelectRegister";
 import RegisterClient from "./components/RegisterClient";
 import RegisterAgent from "./components/RegisterAgent";
 import Inicio from "./components/Inicio";
-import FrontCatalog from "./components/FrontCatalog";
 import SimuladorPrestamos from './components/SimuladorPrestamos';
 import SolicitudesForm from './components/SolicitudesForm';
 import HistorialForm from './components/HistorialForm';
 
 // Componente de bienvenida (Home)
-const Home = () => {
-  return (
-    <div>
-      <h2>Bienvenido al sistema</h2>
-      <p>Selecciona una opción del menú para continuar.</p>
-    </div>
-  );
-};
 
 function App() {
   return (
     <Router>
       <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<PublicLayout />}>
-          <Route index element={<Home />} />
-          <Route path="catalog" element={<PropertyCatalog />} />
-          <Route path="property/:id" element={<PropertyDetails />} />
-        </Route>
-        {/* Ruta principal donde aparece un mensaje de bienvenida */}
-        <Route path="/" element={<Home />} />
 
         {/* Ruta para el formulario de solicitudes */}
         <Route path="/solicitudes" element={<SolicitudesForm />} />
@@ -59,6 +42,26 @@ function App() {
 
         {/* Ruta de inicio de sesión */}
         <Route path="/login" element={<Login />} />
+
+        {/* Ruta de selección de registro */}
+        <Route path="/register" element={<SelectRegister />} />
+
+        {/* Ruta de formulario de registro */}
+        <Route path="/register/client" element={<RegisterClient />} />
+
+        {/* Ruta de formulario de registro para agente inmobiliario */}
+        <Route path="/register/agent" element={<RegisterAgent />} />
+
+        {/* Ruta para Home */}
+        <Route path="/inicio" element={<Inicio />} />
+
+
+        {/* Public Routes */}
+        <Route path="/" element={<PublicLayout />}>
+          <Route index element={<Home />} />
+          <Route path="catalog" element={<PropertyCatalog />} />
+          <Route path="property/:id" element={<PropertyDetails />} />
+        </Route>
 
         {/* Admin Routes */}
         <Route path="/admin" element={<AdminLayout />}>

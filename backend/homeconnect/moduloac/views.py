@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework import status
 from django.db import transaction
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from rest_framework.parsers import MultiPartParser, JSONParser
 from .models import Propiedad, FotoAdicional, ClasificacionPropiedad, Servicios
@@ -32,10 +32,10 @@ class UserCreateView(APIView):
 
 
 class UserListView(APIView):
-    permission_classes = [IsAdminUser]
+    #permission_classes = [IsAdminUser]
 
     def get(self, request):
-        users = User.objects.all()
+        users = get_user_model().objects.all()
         serializer = UserSerializer(users, many=True)
         return Response(serializer.data)
 
@@ -43,7 +43,7 @@ class UserListView(APIView):
 
 
 class UserDetailView(APIView):
-    permission_classes = [IsAuthenticated]
+#    permission_classes = [IsAuthenticated]
 
     def get(self, request, pk):
         user = get_object_or_404(User, pk=pk)
@@ -54,10 +54,10 @@ class UserDetailView(APIView):
 
 
 class UserUpdateView(APIView):
-    permission_classes = [IsAuthenticated]
+ #   permission_classes = [IsAuthenticated]
 
     def put(self, request, pk):
-        user = get_object_or_404(User, pk=pk)
+        user = get_object_or_404(get_user_model(), pk=pk)
         serializer = UserSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -68,10 +68,10 @@ class UserUpdateView(APIView):
 
 
 class UserDeleteView(APIView):
-    permission_classes = [IsAdminUser]
+  #  permission_classes = [IsAdminUser]
 
     def delete(self, request, pk):
-        user = get_object_or_404(User, pk=pk)
+        user = get_object_or_404(get_user_model(), pk=pk)
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -79,12 +79,12 @@ class UserDeleteView(APIView):
 
 
 class PropiedadCreateView(APIView):
-    permission_classes = [IsAuthenticated]
+   # permission_classes = [IsAuthenticated]
 
-    def post(self, request):
-        request.data['usuario'] = request.user.id
+    def post(self, request): 
+        print(request.data['usuario'])
         serializer = PropiedadSerializer(data=request.data)
-
+       
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -94,7 +94,7 @@ class PropiedadCreateView(APIView):
 
 
 class PropiedadListView(APIView):
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
 
     def get(self, request):
         propiedades = Propiedad.objects.all()
@@ -105,7 +105,7 @@ class PropiedadListView(APIView):
 
 
 class PropiedadDetailView(APIView):
-    permission_classes = [IsAuthenticated]
+ #   permission_classes = [IsAuthenticated]
 
     def get(self, request, pk):
         propiedad = get_object_or_404(Propiedad, pk=pk)
@@ -116,7 +116,7 @@ class PropiedadDetailView(APIView):
 
 
 class PropiedadUpdateView(APIView):
-    permission_classes = [IsAuthenticated]
+#    permission_classes = [IsAuthenticated]
 
     def put(self, request, pk):
         propiedad = get_object_or_404(Propiedad, pk=pk)
@@ -131,7 +131,7 @@ class PropiedadUpdateView(APIView):
 
 
 class PropiedadDeleteView(APIView):
-    permission_classes = [IsAuthenticated]
+ #   permission_classes = [IsAuthenticated]
 
     def delete(self, request, pk):
         propiedad = get_object_or_404(Propiedad, pk=pk)
@@ -299,8 +299,8 @@ def eliminar_servicios(request, servicio_id):
 
 # CREAR PROPIEDADD COMPLETA
 class PropiedadCompletaCreateView(APIView):
-    permission_classes = [IsAuthenticated]
-    parser_classes = [MultiPartParser, JSONParser]
+  #  permission_classes = [IsAuthenticated]
+   # parser_classes = [MultiPartParser, JSONParser]
 
     @transaction.atomic
     def post(self, request):

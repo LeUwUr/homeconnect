@@ -24,7 +24,7 @@ function PropertyForm() {
         <h1 className="text-2xl font-bold text-gray-900">Nueva Propiedad</h1>
       </div>
 
-      <div className="bg-white shadow-lg rounded-lg">
+      <div className="bg-white shadow-lg rounded-lg  ">
         <PropertyFormComponent onSubmit={handleSubmit} />
       </div>
     </div>
