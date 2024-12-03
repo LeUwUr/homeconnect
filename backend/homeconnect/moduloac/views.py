@@ -32,7 +32,7 @@ class UserCreateView(APIView):
 
 
 class UserListView(APIView):
-    #permission_classes = [IsAdminUser]
+    # permission_classes = [IsAdminUser]
 
     def get(self, request):
         users = get_user_model().objects.all()
@@ -43,7 +43,7 @@ class UserListView(APIView):
 
 
 class UserDetailView(APIView):
-#    permission_classes = [IsAuthenticated]
+    #    permission_classes = [IsAuthenticated]
 
     def get(self, request, pk):
         user = get_object_or_404(User, pk=pk)
@@ -81,10 +81,10 @@ class UserDeleteView(APIView):
 class PropiedadCreateView(APIView):
    # permission_classes = [IsAuthenticated]
 
-    def post(self, request): 
+    def post(self, request):
         print(request.data['usuario'])
         serializer = PropiedadSerializer(data=request.data)
-       
+
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -97,10 +97,22 @@ class PropiedadListView(APIView):
     #permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        propiedades = Propiedad.objects.all()
-        serializer = PropiedadSerializer(propiedades, many=True)
-        return Response(serializer.data)
+        # Usamos prefetch_related con el nombre correcto de la relación 'clasificacion'
+        propiedades = Propiedad.objects.prefetch_related(
+            'clasificacion'  # Aquí usamos el 'related_name' que definimos en el modelo
+        ).all()
 
+        # Serializar las propiedades
+        propiedad_data = []
+        for propiedad in propiedades:
+            # Obtenemos la clasificación asociada a la propiedad
+            clasificacion = propiedad.clasificacion.first()  # Accedemos al primer elemento relacionado
+            estado_propiedad = clasificacion.estado_propiedad if clasificacion else None
+            propiedad_serialized = PropiedadSerializer(propiedad).data
+            propiedad_serialized['estado_propiedad'] = estado_propiedad
+            propiedad_data.append(propiedad_serialized)
+
+        return Response(propiedad_data)
 # Detalle de propiedad
 
 
@@ -116,7 +128,7 @@ class PropiedadDetailView(APIView):
 
 
 class PropiedadUpdateView(APIView):
-#    permission_classes = [IsAuthenticated]
+    #    permission_classes = [IsAuthenticated]
 
     def put(self, request, pk):
         propiedad = get_object_or_404(Propiedad, pk=pk)

@@ -7,6 +7,8 @@ import { format } from 'date-fns';
 function PropertyList() {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [sortBy, setSortBy] = useState('titulo'); // Campo por el cual ordenar
+  const [sortDirection, setSortDirection] = useState('asc'); // Dirección de orden
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,6 +32,20 @@ function PropertyList() {
       currency: 'MXN',
       minimumFractionDigits: 0,
     }).format(price);
+  };
+
+  const sortProperties = (field) => {
+    const newSortDirection = sortBy === field && sortDirection === 'asc' ? 'desc' : 'asc';
+    setSortBy(field);
+    setSortDirection(newSortDirection);
+
+    const sortedProperties = [...properties].sort((a, b) => {
+      if (a[field] < b[field]) return newSortDirection === 'asc' ? -1 : 1;
+      if (a[field] > b[field]) return newSortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
+
+    setProperties(sortedProperties);
   };
 
   if (loading) {
@@ -58,22 +74,51 @@ function PropertyList() {
           <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Propiedad
+                <span
+                  onClick={() => sortProperties('titulo')}
+                  className="cursor-pointer"
+                >
+                  Propiedad {sortBy === 'titulo' && (sortDirection === 'asc' ? '↑' : '↓')}
+                </span>
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Precio
+                <span
+                  onClick={() => sortProperties('precio')}
+                  className="cursor-pointer"
+                >
+                  Precio {sortBy === 'precio' && (sortDirection === 'asc' ? '↑' : '↓')}
+                </span>
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Estado
+                <span
+                  onClick={() => sortProperties('estado')}
+                  className="cursor-pointer"
+                >
+                  Estado {sortBy === 'estado' && (sortDirection === 'asc' ? '↑' : '↓')}
+                </span>
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Fecha
+                <span
+                  onClick={() => sortProperties('fecha_adquisicion')}
+                  className="cursor-pointer"
+                >
+                  Fecha {sortBy === 'fecha_adquisicion' && (sortDirection === 'asc' ? '↑' : '↓')}
+                </span>
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <span
+                  onClick={() => sortProperties('estado_propiedad')}
+                  className="cursor-pointer"
+                >
+                  Status {sortBy === 'estado_propiedad' && (sortDirection === 'asc' ? '↑' : '↓')}
+                </span>
               </th>
               <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Acciones
               </th>
             </tr>
           </thead>
+
           <tbody className="bg-white divide-y divide-gray-200">
             {properties.map((property) => (
               <tr key={property.id}>
@@ -82,7 +127,7 @@ function PropertyList() {
                     <div className="h-10 w-10 flex-shrink-0">
                       <img
                         className="h-10 w-10 rounded-full object-cover"
-                        src={'http://127.0.0.1:8000/moduloac'+property.foto_frontal}
+                        src={'http://127.0.0.1:8000/moduloac' + property.foto_frontal}
                         alt={property.titulo}
                       />
                     </div>
@@ -102,6 +147,11 @@ function PropertyList() {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   {format(new Date(property.fecha_adquisicion), 'dd/MM/yyyy')}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                    {property.estado_propiedad}
+                  </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <button
