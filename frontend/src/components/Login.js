@@ -27,7 +27,7 @@ const Login = () => {
       // Verificar si el correo ya está registrado en Firebase
       fetchSignInMethodsForEmail(auth, user.user.email).then((methods) => {
         if (methods.length > 0) {
-          navigate("/home"); // Ya registrado, redirige a Home
+          navigate("/inicio"); // Ya registrado, redirige a Home
         } else {
           navigate("/register", {
             state: {
