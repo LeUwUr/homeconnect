@@ -12,7 +12,7 @@ function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [timeInterval, setTimeInterval] = useState('months');
-  const [chartFilter, setChartFilter] = useState('classification');
+  const [chartFilter, setChartFilter] = useState('status');
 
   useEffect(() => {
     const loadData = async () => {
@@ -41,9 +41,9 @@ function Dashboard() {
     return {
       totalUsers: users.filter(user => user.tipo_usuario === 'Comprador').length,
       totalProperties: properties.length,
-      activeProperties: properties.filter(p => p.estado === 'Disponible').length,
-      negotiatingProperties: properties.filter(p => p.estado === 'En negociación').length,
-      soldProperties: properties.filter(p => p.estado === 'Vendido').length,
+      activeProperties: classifications.filter(c => c.estado_propiedad === 'Activa').length,
+      negotiatingProperties: classifications.filter(c => c.estado_propiedad === 'En negociación').length,
+      soldProperties: classifications.filter(c => c.estado_propiedad === 'Negociada').length,
     };
   }, [users, properties]);
 
@@ -93,7 +93,7 @@ function Dashboard() {
           color="bg-yellow-500"
         />
         <StatCard
-          title="Propiedades Vendidas"
+          title="Propiedades Negociadas"
           value={stats.soldProperties}
           icon={DollarSign}
           color="bg-red-500"
@@ -117,7 +117,7 @@ function Dashboard() {
               </select>
             </label>
           </div>
-          {/* <UsersChart users={users} timeInterval={timeInterval} /> */}
+          <UsersChart users={users} timeInterval={timeInterval} />
         </div>
 
         <div className="space-y-4">
@@ -130,8 +130,10 @@ function Dashboard() {
                 onChange={(e) => setChartFilter(e.target.value)}
                 className="border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
               >
-                <option value="classification">Por Clasificación</option>
-                <option value="status">Por Estado</option>
+                <option value="status">Por Status</option>
+                <option value="classification">Por Ubicación</option>
+                <option value="state">Por Estado</option>
+                <option value="privacy">Por Tipo de privada</option>
               </select>
             </label>
           </div>

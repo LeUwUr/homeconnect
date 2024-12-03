@@ -325,7 +325,6 @@ function Catalog() {
 
                     <div className="pt-4 border-t border-gray-200 flex justify-between items-center">
                       <p className="text-2xl font-bold text-indigo-600 flex items-center gap-2">
-                        <DollarSign className="h-5 w-5" />
                         {formatPrice(property.precio)}
                       </p>
                       <button

@@ -1,93 +1,114 @@
 import React from 'react';
 import { Pie } from 'react-chartjs-2';
-import {
-  Chart as ChartJS,
-  ArcElement,
-  Tooltip,
-  Legend,
-} from 'chart.js';
+import { Chart as ChartJS, ArcElement, CategoryScale, LinearScale, Tooltip, Legend } from 'chart.js';
 
-// Registrar elementos necesarios
-ChartJS.register(ArcElement, Tooltip, Legend);
+// Registrar los elementos necesarios para Chart.js
+ChartJS.register(ArcElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 function PropertiesChart({ properties, classifications, filterType }) {
-  const getChartData = () => {
-    if (filterType === 'classification') {
-      const classificationCounts = {};
-      classifications.forEach(classification => {
-        const key = classification.ubicacion || 'Sin Clasificación';
-        classificationCounts[key] = (classificationCounts[key] || 0) + 1;
-      });
+    const getChartData = () => {
+        if (filterType === 'classification') {
+            const classificationCounts = {};
+            classifications.forEach(classification => {
+                const key = classification.ubicacion;
+                classificationCounts[key] = (classificationCounts[key] || 0) + 1;
+            });
 
-      return {
-        labels: Object.keys(classificationCounts),
-        data: Object.values(classificationCounts),
-        backgroundColor: generateColors(Object.keys(classificationCounts).length),
-      };
-    } else {
-      const statusCounts = {};
-      properties.forEach(property => {
-        const key = property.estado || 'Sin Estado';
-        statusCounts[key] = (statusCounts[key] || 0) + 1;
-      });
+            return {
+                labels: Object.keys(classificationCounts),
+                data: Object.values(classificationCounts),
+                backgroundColor: [
+                    'rgba(99, 102, 241, 0.6)',
+                    'rgba(251, 146, 60, 0.6)',
+                    'rgba(52, 211, 153, 0.6)',
+                ],
+            };
+        } else if (filterType === 'state') {
+            const stateCounts = {};
+            properties.forEach(property => {
+                const key = property.estado;
+                stateCounts[key] = (stateCounts[key] || 0) + 1;
+            });
 
-      return {
-        labels: Object.keys(statusCounts),
-        data: Object.values(statusCounts),
-        backgroundColor: generateColors(Object.keys(statusCounts).length),
-      };
-    }
-  };
+            return {
+                labels: Object.keys(stateCounts),
+                data: Object.values(stateCounts),
+                backgroundColor: [
+                    'rgba(34, 197, 94, 0.6)',
+                    'rgba(234, 179, 8, 0.6)',
+                    'rgba(239, 68, 68, 0.6)',
+                    'rgba(99, 102, 241, 0.6)',
+                ],
+            };
+        } else if (filterType === 'status') {
+            const statusCounts = {};
+            classifications.forEach(classification => {
+                const key = classification.estado_propiedad; // Aquí usamos estado_propiedad de clasificación
+                statusCounts[key] = (statusCounts[key] || 0) + 1;
+            });
 
-  const generateColors = (count) => {
-    const baseColors = [
-      'rgba(99, 102, 241, 0.6)',
-      'rgba(251, 146, 60, 0.6)',
-      'rgba(52, 211, 153, 0.6)',
-      'rgba(249, 115, 22, 0.6)',
-      'rgba(168, 85, 247, 0.6)',
-      'rgba(34, 197, 94, 0.6)',
-      'rgba(234, 179, 8, 0.6)',
-      'rgba(239, 68, 68, 0.6)',
-    ];
-    return Array.from({ length: count }, (_, i) => baseColors[i % baseColors.length]);
-  };
+            return {
+                labels: Object.keys(statusCounts),
+                data: Object.values(statusCounts),
+                backgroundColor: [
+                    'rgba(99, 102, 241, 0.6)',
+                    'rgba(251, 146, 60, 0.6)',
+                    'rgba(52, 211, 153, 0.6)',
+                    'rgba(249, 115, 22, 0.6)',
+                    'rgba(168, 85, 247, 0.6)',
+                ],
+            };
+        } else if (filterType === 'privacy') {
+            const privacyCounts = {};
+            classifications.forEach(classification => {
+                const key = classification.privada;  // Asegúrate de que 'privacidad' es el nombre correcto del campo
+                privacyCounts[key] = (privacyCounts[key] || 0) + 1;
+            });
 
-  const chartData = getChartData();
-  const options = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'right',
-      },
-      title: {
-        display: true,
-        text: filterType === 'classification' ? 'Propiedades por Clasificación' : 'Propiedades por Estado',
-      },
-    },
-  };
+            return {
+                labels: Object.keys(privacyCounts),
+                data: Object.values(privacyCounts),
+                backgroundColor: [
+                    'rgba(99, 102, 241, 0.6)',
+                    'rgba(251, 146, 60, 0.6)',
+                    'rgba(52, 211, 153, 0.6)',
+                ],
+            };
+        }
+    };
 
-  if (properties.length === 0 && classifications.length === 0) {
-    return <p className="text-gray-500">No hay datos para mostrar en el gráfico.</p>;
-  }
-
-  return (
-    <div className="bg-white p-6 rounded-lg shadow" aria-label="Gráfico de propiedades">
-      <Pie
-        data={{
-          labels: chartData.labels,
-          datasets: [
+    const chartData = {
+        labels: getChartData().labels,
+        datasets: [
             {
-              data: chartData.data,
-              backgroundColor: chartData.backgroundColor,
-              borderWidth: 1,
+                data: getChartData().data,
+                backgroundColor: getChartData().backgroundColor,
+                borderWidth: 1,
             },
-          ],
-        }}
-        options={options}
-      />
-    </div>
-  );
+        ],
+    };
+
+    const options = {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'right',
+            },
+            title: {
+                display: true,
+                text: filterType === 'classification' ? 'Propiedades por Clasificación' :
+                    filterType === 'state' ? 'Propiedades por Estado' :
+                        filterType === 'status' ? 'Propiedades por Estado de Propiedad' :
+                            'Propiedades por Privacidad',
+            },
+        },
+    };
+
+    return (
+        <div className="bg-white p-6 rounded-lg shadow">
+            <Pie data={chartData} options={options} />
+        </div>
+    );
 }
 
 export default PropertiesChart;
