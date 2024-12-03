@@ -34,7 +34,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = get_user_model()  # Asegúrate de que sea tu modelo 'Usuario'
-        fields = ['usuario_id', 'nombre', 'correo_electronico', 'password', 'telefono', 'tipo_usuario', 'is_staff']
+        fields = ['usuario_id', 'nombre', 'correo_electronico', 'password', 'telefono', 'tipo_usuario', 'is_staff', 'fecha_registro', 'eliminado']
 
     def create(self, validated_data):
         # Crear usuario con contraseña encriptada

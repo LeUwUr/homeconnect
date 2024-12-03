@@ -63,3 +63,44 @@ export const registerAdditionalPhoto = async (photoData) => {
     throw new Error('Error registering additional photo');
   }
 };
+
+export const fetchProperties = async () => {
+  try {
+    const response = await api.get('/propiedades/');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching properties:', error);
+    throw error;
+  }
+};
+
+export const fetchPropertyDetails = async (id) => {
+  try {
+    const response = await api.get(`/propiedades/fullinfo/${id}/`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching property details:', error);
+    throw error;
+  }
+};
+
+export const fetchClassifications = async () => {
+  try {
+    const response = await api.get('/clasificaciones/');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching classifications:', error);
+    throw error;
+  }
+};
+
+export const fetchUsers = async () => {
+  try {
+    const response = await api.get('/users/');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    throw error;
+  }
+};
+

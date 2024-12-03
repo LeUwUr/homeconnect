@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { Search, Home, MapPin, Calendar, DollarSign, Ruler, Eye } from 'lucide-react';
+import { Search, Home, MapPin, Calendar, DollarSign, Ruler, Eye, Filter } from 'lucide-react';
 import { format } from 'date-fns';
 import PropertyDetail from './PropertyDetail';
 import ServiceFilters from './ServiceFilters';
-
-const API_URL = 'http://127.0.0.1:8000/moduloac/propiedades/';
-const TOKEN = '5d6d86a40448dfb53abd9ca53d222ffec7ef6c2f';
+import PriceFilter from './PriceFilter';
+import { fetchProperties, fetchPropertyDetails } from '../utils/api';
 
 const formatPrice = (price) => {
   return new Intl.NumberFormat('es-MX', {
@@ -19,11 +17,14 @@ const formatPrice = (price) => {
 
 function Catalog() {
   const [properties, setProperties] = useState([]);
+  const [propertyDetails, setPropertyDetails] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [stateFilter, setStateFilter] = useState('');
   const [selectedProperty, setSelectedProperty] = useState(null);
+  const [showFilters, setShowFilters] = useState(false);
+  const [priceRange, setPriceRange] = useState({ min: '', max: '' });
   const [filters, setFilters] = useState({
     services: {
       electricidad: false,
@@ -76,31 +77,39 @@ function Catalog() {
   });
 
   useEffect(() => {
-    const fetchProperties = async () => {
-      try {
-        const response = await axios.get(API_URL, {
-          headers: {
-            'Authorization': `Token ${TOKEN}`,
-          },
-        });
-        setProperties(response.data.filter((prop) => !prop.eliminado));
-        setLoading(false);
-      } catch (err) {
-        setError('Error al cargar las propiedades');
-        setLoading(false);
-      }
-    };
-
-    fetchProperties();
+    loadProperties();
   }, []);
+
+  const loadProperties = async () => {
+    try {
+      const data = await fetchProperties();
+      setProperties(data.filter((prop) => !prop.eliminado));
+      
+      // Fetch details for each property
+      for (const property of data) {
+        if (!property.eliminado) {
+          const details = await fetchPropertyDetails(property.id);
+          setPropertyDetails(prev => ({
+            ...prev,
+            [property.id]: details
+          }));
+        }
+      }
+      
+      setLoading(false);
+    } catch (err) {
+      setError('Error al cargar las propiedades');
+      setLoading(false);
+    }
+  };
 
   const handleServiceFilterChange = (service) => {
     setFilters(prev => ({
       ...prev,
       services: {
         ...prev.services,
-        [service]: !prev.services[service],
-      },
+        [service]: !prev.services[service]
+      }
     }));
   };
 
@@ -109,19 +118,56 @@ function Catalog() {
       ...prev,
       classification: {
         ...prev.classification,
-        [field]: value,
-      },
+        [field]: value
+      }
     }));
   };
 
-  const filteredProperties = properties.filter(property => {
-    const matchesSearch = property.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         property.direccion.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesState = stateFilter === '' || property.estado === stateFilter;
-    return matchesSearch && matchesState;
-  });
+  const handlePriceRangeChange = (range) => {
+    setPriceRange(range);
+  };
 
-  const states = [...new Set(properties.map(p => p.estado))];
+  const getFilteredProperties = () => {
+    return properties.filter(property => {
+      const details = propertyDetails[property.id];
+      
+      // Search filter
+      const matchesSearch = 
+        property.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        property.direccion.toLowerCase().includes(searchTerm.toLowerCase());
+      if (!matchesSearch) return false;
+
+      // State filter
+      if (stateFilter && property.estado !== stateFilter) return false;
+
+      // Price filter
+      if (priceRange.min && parseFloat(property.precio) < parseFloat(priceRange.min)) return false;
+      if (priceRange.max && parseFloat(property.precio) > parseFloat(priceRange.max)) return false;
+
+      // Services filter
+      const activeServices = Object.entries(filters.services)
+        .filter(([_, value]) => value)
+        .map(([key]) => key);
+
+      if (activeServices.length > 0 && details?.servicios) {
+        const hasAllServices = activeServices.every(service => details.servicios[service]);
+        if (!hasAllServices) return false;
+      }
+
+      // Classification filter
+      if (details?.clasificacion?.[0]) {
+        const classification = details.clasificacion[0];
+        if (filters.classification.ubicacion && 
+            classification.ubicacion !== filters.classification.ubicacion) return false;
+        if (filters.classification.estado_propiedad && 
+            classification.estado_propiedad !== filters.classification.estado_propiedad) return false;
+        if (filters.classification.privada && 
+            classification.privada !== filters.classification.privada) return false;
+      }
+
+      return true;
+    });
+  };
 
   if (loading) {
     return (
@@ -139,12 +185,16 @@ function Catalog() {
     );
   }
 
+  const filteredProperties = getFilteredProperties();
+  const states = [...new Set(properties.map(p => p.estado))];
+
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col lg:flex-row gap-8">
-          {/* Filters Sidebar */}
-          <div className="lg:w-80 space-y-6">
+          <div className={`lg:w-80 space-y-6 ${showFilters ? 'block' : 'hidden lg:block'}`}>
+            <PriceFilter onChange={handlePriceRangeChange} />
+            
             <ServiceFilters
               filters={filters.services}
               onChange={handleServiceFilterChange}
@@ -197,33 +247,42 @@ function Catalog() {
             </div>
           </div>
 
-          {/* Main Content */}
           <div className="flex-1">
             <div className="flex flex-col sm:flex-row justify-between items-center mb-8 space-y-4 sm:space-y-0">
               <h1 className="text-3xl font-bold text-gray-900">Catálogo de Propiedades</h1>
               
-              <div className="flex space-x-4">
-                <div className="relative">
-                  <input
-                    type="text"
-                    placeholder="Buscar propiedades..."
-                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                  <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
-                </div>
-                
-                <select
-                  className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  value={stateFilter}
-                  onChange={(e) => setStateFilter(e.target.value)}
+              <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 w-full sm:w-auto">
+                <button
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="lg:hidden inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50"
                 >
-                  <option value="">Todos los estados</option>
-                  {states.map(state => (
-                    <option key={state} value={state}>{state}</option>
-                  ))}
-                </select>
+                  <Filter className="h-5 w-5 mr-2" />
+                  {showFilters ? 'Ocultar filtros' : 'Mostrar filtros'}
+                </button>
+
+                <div className="flex space-x-4 w-full sm:w-auto">
+                  <div className="relative flex-1 sm:flex-none">
+                    <input
+                      type="text"
+                      placeholder="Buscar propiedades..."
+                      className="w-full sm:w-auto pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                    <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+                  </div>
+                  
+                  <select
+                    className="flex-1 sm:flex-none border border-gray-300 rounded-lg px-4 py-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    value={stateFilter}
+                    onChange={(e) => setStateFilter(e.target.value)}
+                  >
+                    <option value="">Todos los estados</option>
+                    {states.map(state => (
+                      <option key={state} value={state}>{state}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
             </div>
 
@@ -235,15 +294,12 @@ function Catalog() {
                 >
                   <div className="relative h-48">
                     <img
-                      src={'http://127.0.0.1:8000/moduloac'+property.foto_frontal}
+                      src={property.foto_frontal.startsWith('/media') ? 
+                        'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&auto=format&fit=crop' : 
+                        property.foto_frontal}
                       alt={property.titulo}
                       className="w-full h-full object-cover"
                     />
-                    {property.disponibilidad && (
-                      <span className="absolute top-4 right-4 bg-indigo-600 text-white px-3 py-1 rounded-full text-sm">
-                        {property.disponibilidad}
-                      </span>
-                    )}
                   </div>
 
                   <div className="p-6 space-y-4">
