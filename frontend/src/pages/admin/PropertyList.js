@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Eye, Edit, Plus } from 'lucide-react';
-import { getProperties } from '../../utils/api';
+import { getProperties, updateClassification } from '../../utils/api'; // Asegúrate de importar `updateClassification`
 import { format } from 'date-fns';
+import toast from 'react-hot-toast';
 
 function PropertyList() {
   const [properties, setProperties] = useState([]);
@@ -48,6 +49,28 @@ function PropertyList() {
     setProperties(sortedProperties);
   };
 
+  const handleStatusChange = async (propertyId, newStatus) => {
+    const confirmChange = window.confirm(
+      `¿Está seguro de que desea cambiar el estado de la propiedad a "${newStatus}"?`
+    );
+
+    if (!confirmChange) return;
+
+    try {
+      await updateClassification(propertyId, { estado_propiedad: newStatus });
+      // Actualiza el estado local después de cambiarlo en el backend
+      setProperties((prevProperties) =>
+        prevProperties.map((property) =>
+          property.id === propertyId ? { ...property, estado_propiedad: newStatus } : property
+        )
+      );
+      toast.success('Propiedad actualizada exitosamente!');
+    } catch (error) {
+      console.error('Error updating status:', error);
+      toast.error('Error al actualizar la propiedad');
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -82,36 +105,16 @@ function PropertyList() {
                 </span>
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                <span
-                  onClick={() => sortProperties('precio')}
-                  className="cursor-pointer"
-                >
-                  Precio {sortBy === 'precio' && (sortDirection === 'asc' ? '↑' : '↓')}
-                </span>
+                Precio
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                <span
-                  onClick={() => sortProperties('estado')}
-                  className="cursor-pointer"
-                >
-                  Estado {sortBy === 'estado' && (sortDirection === 'asc' ? '↑' : '↓')}
-                </span>
+                Estado
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                <span
-                  onClick={() => sortProperties('fecha_adquisicion')}
-                  className="cursor-pointer"
-                >
-                  Fecha {sortBy === 'fecha_adquisicion' && (sortDirection === 'asc' ? '↑' : '↓')}
-                </span>
+                Fecha
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                <span
-                  onClick={() => sortProperties('estado_propiedad')}
-                  className="cursor-pointer"
-                >
-                  Status {sortBy === 'estado_propiedad' && (sortDirection === 'asc' ? '↑' : '↓')}
-                </span>
+                Status
               </th>
               <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Acciones
@@ -149,14 +152,22 @@ function PropertyList() {
                   {format(new Date(property.fecha_adquisicion), 'dd/MM/yyyy')}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                    {property.estado_propiedad}
-                  </span>
+                  <select
+                    value={property.estado_propiedad}
+                    onChange={(e) => handleStatusChange(property.id, e.target.value)}
+                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                  >
+                    <option value="En negociación">En negociación</option>
+                    <option value="Negociada">Negociada</option>
+                    <option value="En espera">En espera</option>
+                    <option value="Cancelada">Cancelada</option>
+                    <option value="Activa">Activa</option>
+                  </select>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <button
                     onClick={() => navigate(`/admin/properties/${property.id}`)}
-                    className="text-indigo-600 bg-transparent  hover:bg-indigo-900 hover:text-white"
+                    className="text-indigo-600 bg-transparent hover:bg-indigo-900 hover:text-white"
                   >
                     <Eye className="h-5 w-5" />
                   </button>

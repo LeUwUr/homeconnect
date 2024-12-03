@@ -103,26 +103,14 @@ function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <h2 className="text-lg font-semibold text-gray-900">Usuarios Registrados</h2>
-            <label>
-              <span className="sr-only">Filtrar usuarios por:</span>
-              <select
-                value={timeInterval}
-                onChange={(e) => setTimeInterval(e.target.value)}
-                className="border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              >
-                <option value="days">Por Días</option>
-                <option value="months">Por Meses</option>
-                <option value="years">Por Años</option>
-              </select>
-            </label>
+            <h2 className="text-lg font-semibold text-gray-900 py-3">Usuarios Registrados</h2>
           </div>
           <UsersChart users={users} timeInterval={timeInterval} />
         </div>
 
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <h2 className="text-lg font-semibold text-gray-900">Propiedades</h2>
+            <h2 className="text-lg font-semibold text-gray-900">Propiedades Registradas</h2>
             <label>
               <span className="sr-only">Filtrar propiedades por:</span>
               <select
