@@ -13,7 +13,6 @@ homeconnectenv/
 .env.production
 
 # Archivos sensibles
-firebaseConfig.js
 homeconnect/settings.py
 .firebaserc
 
