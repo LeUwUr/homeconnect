@@ -17,6 +17,7 @@ function PropertyEdit() {
   const fetchPropertyDetails = async () => {
     try {
       const response = await getPropertyDetails(id);
+      console.log(response)
       setProperty(response.data);
     } catch (error) {
       console.error('Error fetching property details:', error);
@@ -28,20 +29,31 @@ function PropertyEdit() {
 
   const handleSubmit = async (formData) => {
     try {
+      // Verificar si `foto_frontal` es un string y eliminarlo del objeto `formData.propiedad`
+      if (typeof formData.propiedad.foto_frontal === 'string') {
+        delete formData.propiedad.foto_frontal;
+      }
+
+      // Actualizar la propiedad
       await updateProperty(id, formData.propiedad);
+
+      // Actualizar clasificación si existe
       if (property.clasificacion[0]) {
         await updateClassification(property.clasificacion[0].id, formData.classification);
       }
+
+      // Actualizar servicios si existen
       if (property.servicios.id) {
         await updateServices(property.servicios.id, formData.services);
       }
-      toast.success('Propiedad actualizada exitosamente');
+
       navigate('/admin/properties');
     } catch (error) {
       console.error('Error updating property:', error);
       toast.error('Error al actualizar la propiedad');
     }
   };
+
 
   if (loading) {
     return (
@@ -58,7 +70,7 @@ function PropertyEdit() {
       </div>
 
       <div className="bg-white shadow-lg rounded-lg">
-        <PropertyFormComponent 
+        <PropertyFormComponent
           onSubmit={handleSubmit}
           initialData={property}
           isEditing={true}

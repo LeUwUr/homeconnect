@@ -1,41 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { Upload } from 'lucide-react';
 
-function PropertyForm({ onNext, updateFormData }) {
+function PropertyForm({ onNext, updateFormData, initialData = {} }) {
   const [formData, setFormData] = useState({
-    usuario: 1,
-    titulo: '',
-    precio: '',
-    foto_frontal: null,
-    direccion: '',
-    tamano_m2_terr: '',
-    tamano_m2_const: '',
-    estado: 'Nuevo',
-    fecha_adquisicion: format(new Date(), 'yyyy-MM-dd'),
-    fecha_publicacion: format(new Date(), 'yyyy-MM-dd'),
-    fecha_venta: null,
-    eliminado: false
+    usuario: initialData.usuario || 1,
+    titulo: initialData.titulo || '',
+    precio: initialData.precio || '',
+    foto_frontal: initialData.foto_frontal || null,
+    direccion: initialData.direccion || '',
+    tamano_m2_terr: initialData.tamano_m2_terr || '',
+    tamano_m2_const: initialData.tamano_m2_const || '',
+    estado: initialData.estado || 'Nuevo',
+    fecha_adquisicion: initialData.fecha_adquisicion || format(new Date(), 'yyyy-MM-dd'),
+    fecha_publicacion: initialData.fecha_publicacion || format(new Date(), 'yyyy-MM-dd'),
+    fecha_venta: initialData.fecha_venta || null,
+    eliminado: initialData.eliminado || false,
   });
 
   const [previewUrl, setPreviewUrl] = useState('');
 
+  // Efecto para mostrar la imagen inicial en el modo de edición
+  useEffect(() => {
+    if (initialData.foto_frontal && typeof initialData.foto_frontal === 'string') {
+      setPreviewUrl(initialData.foto_frontal); // URL existente
+    }
+  }, [initialData.foto_frontal]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handlePhotoChange = (e) => {
     const file = e.target.files?.[0];
     if (file) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        foto_frontal: file
+        foto_frontal: file,
       }));
-      
+
       const url = URL.createObjectURL(file);
       setPreviewUrl(url);
     }
@@ -57,7 +64,11 @@ function PropertyForm({ onNext, updateFormData }) {
               {previewUrl ? (
                 <div className="relative">
                   <img
-                    src={previewUrl}
+                    src={
+                      previewUrl.startsWith('/media')
+                        ? `http://127.0.0.1:8000/moduloac${previewUrl}`
+                        : previewUrl
+                    }
                     alt="Preview"
                     className="mx-auto h-40 w-auto rounded-lg object-cover"
                   />
@@ -65,7 +76,7 @@ function PropertyForm({ onNext, updateFormData }) {
                     type="button"
                     onClick={() => {
                       setPreviewUrl('');
-                      setFormData(prev => ({ ...prev, foto_frontal: null }));
+                      setFormData((prev) => ({ ...prev, foto_frontal: null }));
                     }}
                     className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
                   >
@@ -88,7 +99,6 @@ function PropertyForm({ onNext, updateFormData }) {
                         className="sr-only"
                         accept="image/*"
                         onChange={handlePhotoChange}
-                        required
                       />
                     </label>
                     <p className="pl-1">o arrastrar y soltar</p>
@@ -99,7 +109,7 @@ function PropertyForm({ onNext, updateFormData }) {
             </div>
           </div>
         </div>
-
+  
         <div>
           <label className="block text-sm font-medium text-gray-700">Título</label>
           <input
@@ -111,7 +121,7 @@ function PropertyForm({ onNext, updateFormData }) {
             onChange={handleChange}
           />
         </div>
-
+  
         <div>
           <label className="block text-sm font-medium text-gray-700">Precio</label>
           <input
@@ -124,7 +134,7 @@ function PropertyForm({ onNext, updateFormData }) {
             onChange={handleChange}
           />
         </div>
-
+  
         <div>
           <label className="block text-sm font-medium text-gray-700">Tamaño Terreno (m²)</label>
           <input
@@ -137,7 +147,7 @@ function PropertyForm({ onNext, updateFormData }) {
             onChange={handleChange}
           />
         </div>
-
+  
         <div>
           <label className="block text-sm font-medium text-gray-700">Tamaño Construcción (m²)</label>
           <input
@@ -150,7 +160,7 @@ function PropertyForm({ onNext, updateFormData }) {
             onChange={handleChange}
           />
         </div>
-
+  
         <div>
           <label className="block text-sm font-medium text-gray-700">Estado</label>
           <select
@@ -164,7 +174,7 @@ function PropertyForm({ onNext, updateFormData }) {
             <option value="En construcción">En construcción</option>
           </select>
         </div>
-
+  
         <div>
           <label className="block text-sm font-medium text-gray-700">Fecha de Adquisición</label>
           <input
@@ -176,7 +186,7 @@ function PropertyForm({ onNext, updateFormData }) {
             onChange={handleChange}
           />
         </div>
-
+  
         <div>
           <label className="block text-sm font-medium text-gray-700">Fecha de Publicación</label>
           <input
@@ -189,7 +199,7 @@ function PropertyForm({ onNext, updateFormData }) {
           />
         </div>
       </div>
-
+  
       <div>
         <label className="block text-sm font-medium text-gray-700">Dirección</label>
         <input
@@ -201,7 +211,7 @@ function PropertyForm({ onNext, updateFormData }) {
           onChange={handleChange}
         />
       </div>
-
+  
       <div className="flex justify-end">
         <button
           type="submit"
@@ -213,5 +223,4 @@ function PropertyForm({ onNext, updateFormData }) {
     </form>
   );
 }
-
 export default PropertyForm;

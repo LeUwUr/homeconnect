@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
 
-function ClassificationForm({ onPrev, onSubmit, updateFormData }) {
+function ClassificationForm({ onPrev, onSubmit, updateFormData, initialData = {} }) {
   const [classification, setClassification] = useState({
     ubicacion: '',
     estado_propiedad: '',
-    privada: ''
+    privada: '',
+    ...initialData, // Mezcla datos iniciales con valores predeterminados
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setClassification(prev => ({
+    setClassification((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -59,7 +60,7 @@ function ClassificationForm({ onPrev, onSubmit, updateFormData }) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Tipo de Propiedad</label>
+          <label className="block text-sm font-medium text-gray-700">Tipo de Privada</label>
           <select
             name="privada"
             required

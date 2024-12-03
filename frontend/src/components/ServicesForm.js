@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-function ServicesForm({ onNext, onPrev, updateFormData }) {
+function ServicesForm({ onNext, onPrev, updateFormData, initialData = {} }) {
+
+  console.log(initialData)
   const [services, setServices] = useState({
     electricidad: false,
     agua: false,
@@ -42,14 +44,15 @@ function ServicesForm({ onNext, onPrev, updateFormData }) {
     captacion_agua_lluvia: false,
     ventanas_doble_vidrio: false,
     aislamiento_termico: false,
-    jardines_verticales: false
+    jardines_verticales: false,
+    ...initialData, // Merge initial data into default values
   });
 
   const handleChange = (e) => {
     const { name, checked } = e.target;
-    setServices(prev => ({
+    setServices((prev) => ({
       ...prev,
-      [name]: checked
+      [name]: checked,
     }));
   };
 
@@ -67,7 +70,7 @@ function ServicesForm({ onNext, onPrev, updateFormData }) {
     'Tecnología': ['domotica', 'automatizacion_luces', 'cerraduras_inteligentes', 'termostato_inteligente'],
     'Espacios Adicionales': ['oficina_en_casa', 'estacionamiento_cubierto', 'cochera', 'cuarto_servicio', 'lavadero', 'bodega'],
     'Áreas Comunes': ['areas_verdes_comunes', 'jardines', 'zona_juegos_infantiles', 'gimnasio', 'area_deportiva'],
-    'Sustentabilidad': ['paneles_solares', 'cisterna', 'captacion_agua_lluvia', 'ventanas_doble_vidrio', 'aislamiento_termico', 'jardines_verticales']
+    'Sustentabilidad': ['paneles_solares', 'cisterna', 'captacion_agua_lluvia', 'ventanas_doble_vidrio', 'aislamiento_termico', 'jardines_verticales'],
   };
 
   return (
@@ -76,7 +79,7 @@ function ServicesForm({ onNext, onPrev, updateFormData }) {
         <div key={category} className="space-y-4">
           <h3 className="text-lg font-medium text-gray-900">{category}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {items.map(service => (
+            {items.map((service) => (
               <div key={service} className="flex items-center">
                 <input
                   type="checkbox"
@@ -87,7 +90,10 @@ function ServicesForm({ onNext, onPrev, updateFormData }) {
                   className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
                 />
                 <label htmlFor={service} className="ml-2 block text-sm text-gray-900">
-                  {service.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                  {service
+                    .split('_')
+                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(' ')}
                 </label>
               </div>
             ))}
