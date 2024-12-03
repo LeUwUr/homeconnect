@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 import { IoMenu } from "react-icons/io5";
 import { FaSearchLocation } from "react-icons/fa";
 import { FaTimes } from "react-icons/fa";
+import { Range } from "react-range";
+import ModalLogin from "./ModalLogin";
 
 import logo from "../assets/HomeLogo.png";
 
-const Inicio = () => {
+const Inicio = ({ onLogout }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [propiedades, setPropiedades] = useState([]);
   const [filtros, setFiltros] = useState({
@@ -13,14 +15,15 @@ const Inicio = () => {
     recamaras: "",
     banos: "",
     material: "",
+    rangoPrecio: [0, 9000000], // Rango de precios inicial
   });
   const [busqueda, setBusqueda] = useState("");
+  const [showModal, setShowModal] = useState(false); // Estado para manejar la visibilidad de la modal
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  // Fetch all properties
   const fetchPropiedades = async () => {
     try {
       const response = await fetch("http://localhost:8000/propiedades/");
@@ -28,16 +31,25 @@ const Inicio = () => {
         throw new Error("Error al cargar las propiedades");
       }
       const data = await response.json();
-      setPropiedades(data); // Muestra todas las propiedades al inicio
+      setPropiedades(data);
     } catch (error) {
       console.error("Error al cargar las propiedades:", error);
     }
   };
 
-  // Fetch filtered properties
   const fetchPropiedadesFiltradas = async () => {
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      setShowModal(true); // Mostrar modal si el usuario no está autenticado
+      return;
+    }
+
     try {
-      const params = new URLSearchParams(filtros);
+      const params = new URLSearchParams({
+        ...filtros,
+        minPrecio: filtros.rangoPrecio[0],
+        maxPrecio: filtros.rangoPrecio[1],
+      });
       const response = await fetch(
         `http://localhost:8000/propiedades/filtrar/?${params.toString()}`
       );
@@ -45,71 +57,48 @@ const Inicio = () => {
         throw new Error("Error al cargar las propiedades filtradas");
       }
       const data = await response.json();
-      setPropiedades(data); // Muestra solo las propiedades filtradas
+      setPropiedades(data);
     } catch (error) {
       console.error("Error al cargar las propiedades filtradas:", error);
     }
   };
 
-  // Fetch properties based on search query
-  const buscarPropiedades = async (query) => {
-    try {
-      const response = await fetch(
-        `http://localhost:8000/propiedades/buscar/?query=${query}`
-      );
-      if (!response.ok) {
-        throw new Error("Error al buscar propiedades");
-      }
-      const data = await response.json();
-      setPropiedades(data); // Muestra las propiedades que coinciden con la búsqueda
-    } catch (error) {
-      console.error("Error al buscar propiedades:", error);
-    }
-  };
-
-  // Clear filters and search
   const limpiarFiltrosYBusqueda = () => {
     setFiltros({
       pisos: "",
       recamaras: "",
       banos: "",
       material: "",
+      rangoPrecio: [0, 9000000], // Restablecer rango completo
     });
     setBusqueda("");
     fetchPropiedades();
   };
 
-  // Handle filter input change
   const handleFilterChange = (e) => {
     setFiltros({ ...filtros, [e.target.name]: e.target.value });
   };
 
-  // Handle search input change with debounce
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      if (busqueda.trim()) {
-        buscarPropiedades(busqueda);
-      } else {
-        fetchPropiedades(); // Si el campo de búsqueda está vacío, cargar todas las propiedades
-      }
-    }, 500); // Ajusta el tiempo de debounce según sea necesario
-
-    return () => clearTimeout(timeoutId); // Limpia el timeout anterior
-  }, [busqueda]);
-
-  useEffect(() => {
-    fetchPropiedades(); // Load all properties on initial render
+    fetchPropiedades();
   }, []);
 
   return (
     <div className="h-screen bg-white">
-      {/* Barra de navegación */}
+      {showModal && (
+        <ModalLogin
+          onLogin={() => {
+            setShowModal(false);
+          }}
+          onClose={() => setShowModal(false)} // Cierra la modal cuando se haga clic afuera o en el botón cerrar
+        />
+      )}
+
       <header className="bg-white shadow-md px-4 py-4 flex items-center justify-between">
         <div className="flex items-center space-x-6">
           <img src={logo} alt="House Connect Logo" className="w-10 h-10" />
           <h1 className="text-2xl font-mono font-bold">House Connect</h1>
         </div>
-
         <div className="flex items-center border border-gray-300 rounded-full px-6 py-2 w-1/2 mx-auto bg-white shadow-md">
           <input
             type="text"
@@ -124,18 +113,16 @@ const Inicio = () => {
             </button>
           )}
         </div>
-
         <div className="relative flex items-center space-x-4">
-          <button className="flex items-center ml-[-10px]">
+          <button className="flex items-center ml-[-10px]" onClick={onLogout}>
             <IoMenu size={45} className="text-sky-700" />
           </button>
         </div>
       </header>
 
-      {/* Filtros */}
       <div className="p-4">
         <h2 className="text-2xl font-bold mb-4">Filtros</h2>
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-4 gap-4 mb-4">
           {[
             { label: "Pisos", name: "pisos", type: "number" },
             { label: "Recámaras", name: "recamaras", type: "number" },
@@ -152,7 +139,6 @@ const Inicio = () => {
               />
             </div>
           ))}
-
           <div className="flex flex-col">
             <label className="text-sm font-bold">Material</label>
             <select
@@ -169,7 +155,44 @@ const Inicio = () => {
           </div>
         </div>
 
-        <div className="flex space-x-4 mt-4">
+        {/* Rango de precios */}
+        <div className="flex items-center justify-center space-x-4 mb-4">
+          <div className="w-1/3">
+            <label className="text-sm font-bold mb-2 block">Rango de Precio</label>
+            <div className="w-full">
+              <Range
+                step={1000}
+                min={0}
+                max={9000000}
+                values={filtros.rangoPrecio}
+                onChange={(values) =>
+                  setFiltros({ ...filtros, rangoPrecio: values })
+                }
+                renderTrack={({ props, children }) => (
+                  <div
+                    {...props}
+                    className="h-2 bg-gray-300 rounded-md"
+                    style={{ width: "100%" }}
+                  >
+                    {children}
+                  </div>
+                )}
+                renderThumb={({ props }) => (
+                  <div
+                    {...props}
+                    className="h-4 w-4 bg-blue-500 rounded-full shadow"
+                  />
+                )}
+              />
+            </div>
+            <div className="flex justify-between text-sm mt-2">
+              <span>${filtros.rangoPrecio[0].toLocaleString()}</span>
+              <span>${filtros.rangoPrecio[1].toLocaleString()}</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex space-x-4 mt-4 justify-center">
           <button
             onClick={fetchPropiedadesFiltradas}
             className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-md"
@@ -185,14 +208,10 @@ const Inicio = () => {
         </div>
       </div>
 
-      {/* Resultados */}
       <div className="p-4 grid grid-cols-3 gap-6">
         {propiedades.length > 0 ? (
           propiedades.map((propiedad) => (
-            <div
-              key={propiedad.propiedad_id}
-              className="bg-white shadow-md rounded-md overflow-hidden"
-            >
+            <div key={propiedad.propiedad_id} className="bg-white shadow-md rounded-md overflow-hidden">
               <div className="bg-gray-300 h-40">
                 <img
                   src={propiedad.foto_frontal || "https://via.placeholder.com/150"}
