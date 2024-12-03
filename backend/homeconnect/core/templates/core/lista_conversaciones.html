@@ -32,6 +32,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: relative;
         }
 
         .conversacion:last-child {
@@ -60,6 +61,17 @@
             text-align: right;
         }
 
+        /* Punto rojo al lado derecho */
+        .punto-rojo {
+            width: 10px;
+            height: 10px;
+            background-color: red;
+            border-radius: 50%;
+            position: absolute;
+            top: 15px;
+            right: 15px;
+        }
+
         a.volver {
             display: block;
             text-align: center;
@@ -81,11 +93,20 @@
             <div class="conversacion">
                 <div>
                     <a href="{% url 'detalle_conversacion' conversacion.pk %}">
-                        {{ conversacion.propiedad.titulo }} - {{ conversacion.agente.nombre }}
+                        {{ conversacion.propiedad.titulo }} - 
+                        {% if request.user == conversacion.comprador %}
+                            {{ conversacion.agente.nombre }}
+                        {% else %}
+                            {{ conversacion.comprador.nombre }}
+                        {% endif %}
                     </a>
                     <p class="ultimo-mensaje">
                         {% with conversacion.mensajes.last as ultimo_mensaje %}
-                            {{ ultimo_mensaje.texto|truncatechars:50 }}
+                            {% if ultimo_mensaje.remitente == request.user %}
+                                <strong>Yo:</strong> {{ ultimo_mensaje.texto|truncatechars:50 }}
+                            {% else %}
+                                {{ ultimo_mensaje.texto|truncatechars:50 }}
+                            {% endif %}
                         {% endwith %}
                     </p>
                 </div>
@@ -94,6 +115,11 @@
                         {{ ultimo_mensaje.fecha_envio|date:"d M Y H:i" }}
                     {% endwith %}
                 </div>
+                
+                <!-- Mostrar el punto rojo si hay mensajes no vistos -->
+                {% if conversacion.mensajes_no_vistos > 0 %}
+                    <div class="punto-rojo"></div>
+                {% endif %}
             </div>
         {% empty %}
             <p>No tienes conversaciones aún.</p>

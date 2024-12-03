@@ -94,7 +94,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Agregar Oferta a {{ propiedad.nombre }}</h1>
+        <h1>Agregar Oferta a {{ propiedad.titulo }}</h1>
 
         <form action="{% url 'guardar_oferta' propiedad.id %}" method="post">
             {% csrf_token %}
@@ -105,6 +105,10 @@
             <div>
                 <label for="descripcion">Descripción:</label>
                 <textarea id="descripcion" name="descripcion" rows="4" required></textarea>
+            </div>
+            <div>
+                <label for="fecha_expiracion">Fecha de Expiración:</label>
+                <input type="datetime-local" id="fecha_expiracion" name="fecha_expiracion" required>
             </div>
             <button type="submit">Guardar Oferta</button>
         </form>

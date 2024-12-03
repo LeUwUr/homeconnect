@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
+    'core'
 ]
 
 MIDDLEWARE = [
@@ -69,14 +71,21 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'homeconnect.wsgi.application'
 
+AUTH_USER_MODEL = 'core.Usuario'
+LOGIN_REDIRECT_URL = '/propiedades/'
+LOGIN_URL = 'login'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'home_connect',         
+        'USER': 'postgres',             
+        'PASSWORD': 'Sirm1311.',        
+        'HOST': 'localhost',            
+        'PORT': '5432',
     }
 }
 
@@ -105,11 +114,13 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Tijuana'
 
 USE_I18N = True
 
-USE_TZ = True
+USE_L10N = True
+
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)

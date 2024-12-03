@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
 from django.conf import settings
+from datetime import timezone
 
 class UsuarioManager(BaseUserManager):
     def create_user(self, correo_electronico, nombre, contrasena=None, **extra_fields):
@@ -76,9 +77,14 @@ class Oferta(models.Model):
         default='pendiente'
     )  
     fecha_oferta = models.DateTimeField(auto_now_add=True)
+    fecha_expiracion = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.propiedad.nombre} - {self.descuento}%"
+    
+    def esta_expirada(self):
+        """Método para verificar si la oferta ha expirado."""
+        return self.fecha_expiracion and self.fecha_expiracion < timezone.now()
 
     class Meta:
         db_table = 'ofertas'
@@ -116,3 +122,41 @@ class Mensaje(models.Model):
 
     def __str__(self):
         return f"Mensaje de {self.remitente} en {self.fecha_envio.strftime('%Y-%m-%d %H:%M:%S')}"
+
+
+class Favorito(models.Model):
+    usuario = models.ForeignKey('Usuario', on_delete=models.CASCADE)
+    propiedad = models.ForeignKey('Propiedad', on_delete=models.CASCADE)
+    fecha_agregado = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('usuario', 'propiedad')
+        db_table = 'favoritos'
+
+class Notificacion(models.Model):
+    TIPO_CAMBIO_PRECIO = 'Cambio de precio'
+    TIPO_CAMBIO_OFERTA = 'Cambio de oferta'
+    TIPO_VENCIMIENTO_OFERTA = 'Vencimiento de oferta'
+    TIPO_CAMBIO_DISPONIBILIDAD = 'Cambio de disponibilidad'
+    TIPO_GUARDADO_FAVORITO = 'Guardado en favoritos'
+
+    TIPO_NOTIFICACION_CHOICES = [
+        (TIPO_CAMBIO_PRECIO, 'Cambio de precio'),
+        (TIPO_CAMBIO_OFERTA, 'Cambio de oferta'),
+        (TIPO_VENCIMIENTO_OFERTA, 'Vencimiento de oferta'),
+        (TIPO_CAMBIO_DISPONIBILIDAD, 'Cambio de disponibilidad'),
+        (TIPO_GUARDADO_FAVORITO, 'Guardado en favoritos'),
+    ]
+
+    usuario = models.ForeignKey('Usuario', on_delete=models.CASCADE)  # Usuario que recibe la notificación
+    propiedad = models.ForeignKey('Propiedad', on_delete=models.CASCADE)
+    tipo = models.CharField(max_length=50, choices=TIPO_NOTIFICACION_CHOICES)
+    mensaje = models.TextField()
+    leida = models.BooleanField(default=False)
+    fecha = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Notificación para {self.usuario.username} - {self.tipo}"
+    
+    class Meta:
+        db_table = 'notificaciones'
