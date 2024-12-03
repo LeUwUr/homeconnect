@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todas las Notificaciones</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #fff;
+            padding: 10px 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .navbar h2 {
+            margin: 0;
+            color: #007bff;
+        }
+
+        .navbar a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        .navbar a:hover {
+            color: #0056b3;
+        }
+
+        .notificaciones {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .notificacion {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s;
+            position: relative;
+        }
+
+        .notificacion:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .notificacion.leida {
+            background-color: #f1f1f1;
+            color: #888;
+        }
+
+        .notificacion.no-leida {
+            background-color: #e6f7ff;
+            color: #333;
+        }
+
+        .notificacion strong {
+            font-size: 16px;
+        }
+
+        .notificacion small {
+            display: block;
+            margin-top: 5px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .marcar-leida {
+    position: absolute;
+    top: 60px;
+    right: 50px;
+    background-color: #007bff;
+    color: #fff;
+    padding: 8px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.marcar-leida:hover {
+    background-color: #0056b3;
+}
+
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .pagination a, .pagination span {
+            margin: 0 5px;
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .pagination a:hover {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .pagination .current {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .pagination .disabled {
+            color: #ccc;
+            pointer-events: none;
+        }
+
+        .no-notificaciones {
+            text-align: center;
+            font-size: 18px;
+            color: #555;
+        }
+
+        .eliminar-todas {
+            background-color: #f44336;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            text-decoration: none;
+            display: block;
+            margin: 20px auto;
+            width: 200px;
+            text-align: center;
+            transition: background-color 0.3s;
+        }
+
+        .eliminar-todas:hover {
+            background-color: #d32f2f;
+        }
+
+        .eliminar-notificacion {
+    position: absolute;
+    top: 20px;
+    right: 50px;  /* Ajusta esta distancia para separarlo más */
+    background-color: #f44336;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.eliminar-notificacion:hover {
+    background-color: #d32f2f;
+}
+
+.marcar-todas-leidas {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    text-decoration: none;
+    text-align: center;
+    display: block;
+    margin: 20px auto;
+    width: 250px;
+    transition: background-color 0.3s;
+}
+
+.marcar-todas-leidas:hover {
+    background-color: #0056b3;
+}
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h2>Cliente: {{ request.user.nombre }}</h2>
+        <a href="{% url 'lista_propiedades' %}">Volver a Propiedades</a>
+    </div>
+
+    <h1>Todas las Notificaciones</h1>
+
+    <!-- Botón para eliminar todas las notificaciones -->
+    <div class="botones-container">
+    <a href="{% url 'eliminar_todas_notificaciones' %}" class="eliminar-todas">Eliminar Todas las Notificaciones</a>
+   
+        <a href="{% url 'marcar_todas_como_leidas' %}" class="marcar-todas-leidas">Marcar todas como leídas</a>
+    </div>
+
+    <div class="notificaciones">
+        {% if page_obj %}
+            {% for notificacion in page_obj %}
+            <div class="notificacion {% if notificacion.leida %}leida{% else %}no-leida{% endif %}">
+                <strong>{{ notificacion.tipo }}:</strong>
+                <br> 
+                {{ notificacion.mensaje|linebreaksbr }}
+                <small>{{ notificacion.fecha|date:"d M Y, H:i" }}</small>
+                
+                {% if notificacion.leida %}
+                    <small>(Leída)</small>
+                {% else %}
+                    <a href="{% url 'marcar_notificacion_leida' notificacion.id %}" class="marcar-leida">Marcar como leída</a>
+                {% endif %}
+                
+                <div class="botones">
+                    <a href="{% url 'eliminar_notificacion' notificacion.id %}" class="eliminar-notificacion" style="background-color: red;">Eliminar</a>
+                </div>
+            </div>            
+            {% endfor %}
+
+            <!-- Paginación -->
+            <div class="pagination">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1">Primera</a>
+                    <a href="?page={{ page_obj.previous_page_number }}">Anterior</a>
+                {% else %}
+                    <span class="disabled">Primera</span>
+                    <span class="disabled">Anterior</span>
+                {% endif %}
+
+                <span class="current">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}">Siguiente</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}">Última</a>
+                {% else %}
+                    <span class="disabled">Siguiente</span>
+                    <span class="disabled">Última</span>
+                {% endif %}
+            </div>
+
+        {% else %}
+            <p class="no-notificaciones">No tienes notificaciones.</p>
+        {% endif %}
+    </div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
