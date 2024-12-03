@@ -50,3 +50,20 @@ usuario.save()
 
 print(f"Usuario {usuario.nombre} creado exitosamente.")
 
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+from core.models import Usuario
+
+# Crear un usuario
+usuario = Usuario.objects.create_user(
+    correo_electronico='yoxi@gmail.com',
+    nombre='Yoxani Jimenez',
+    contrasena='yoxiduck',  # Se encriptará automáticamente
+    tipo_usuario='Comprador',
+    telefono='6641857496'
+)
+
+# Guardar en la base de datos
+usuario.save()
+
+print(f"Usuario {usuario.nombre} creado exitosamente.")

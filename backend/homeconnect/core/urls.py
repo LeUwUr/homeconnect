@@ -13,5 +13,12 @@ urlpatterns = [
     path('conversacion/<int:propiedad_id>/', views.abrir_chat, name='abrir_chat'),
     path('detalle_conversacion/<int:pk>/', views.detalle_conversacion, name='detalle_conversacion'),
     path('conversaciones/', views.lista_conversaciones, name='lista_conversaciones'),
-
+    path('agregar_favorito/<int:propiedad_id>/', views.agregar_favorito, name='agregar_favorito'),
+    path('quitar_favorito/<int:propiedad_id>/', views.quitar_favorito, name='quitar_favorito'),
+    path('favoritos/', views.lista_favoritos, name='lista_favoritos'),
+    path('notificaciones/', views.lista_notificaciones, name='lista_notificaciones'),
+    path('notificacion/<int:notificacion_id>/marcar_leida/', views.marcar_notificacion_leida, name='marcar_notificacion_leida'),
+    path('eliminar_notificacion/<int:notificacion_id>/', views.eliminar_notificacion, name='eliminar_notificacion'),
+    path('eliminar_todas_notificaciones/', views.eliminar_todas_notificaciones, name='eliminar_todas_notificaciones'),
+    path('marcar_todas_como_leidas/', views.marcar_todas_como_leidas, name='marcar_todas_como_leidas'),
 ]

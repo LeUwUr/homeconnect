@@ -18,3 +18,28 @@ insert into public.propiedades values
 (4,'Casa4',123456.00,'foto4.png','Disponible','Calle Real de la Ermita',150.00,'Nueva','11-02-2005',null,'27-11-2024',False,3),
 (5,'Casa5',750850.00,'foto5.png','Disponible','Calle Real del Bosque',128.00,'Nueva','30-10-2001',null,'27-11-2024',False,3),
 (6,'Casa6',100422.00,'foto6.png','Disponible','Calle Real de Otay',121.00,'Nueva','25-02-1995',null,'27-11-2024',False,3)
+
+INSERT INTO public.propiedades  (id, titulo, precio, foto_frontal, disponibilidad, direccion, tamano_m2, estado, fecha_adquisicion, fecha_venta, fecha_publicacion, eliminado, usuario_id) VALUES
+(8, 'Casa en Pasaje Alva', 7266160.02, 'fotoCasa8.png', 'Disponible', 'Continuación Distrito Federal 741 Interior 775, San Carlota de la Montaña, Quintana Roo', 296.19, 'Usada', '2022-09-05', NULL, '2024-12-02', FALSE, 3),
+(9, 'Casa en Circuito Colima', 8212721.68, 'fotoCasa9.png', 'Disponible', 'Viaducto Montenegro 776 Interior 223, Vieja Eritrea, Tlaxcala', 318.01, 'Usada', '2022-03-13', NULL, '2024-12-02', FALSE, 3),
+(10, 'Casa en Privada Filipinas', 3958449.36, 'fotoCasa10.png', 'Disponible', 'Diagonal Guanajuato 956 Interior 860, Vieja Estonia, México', 205.82, 'Nueva', '2023-07-03', NULL, '2024-12-02', FALSE, 2),
+(11, 'Casa en Retorno Italia', 3050799.41, 'fotoCasa11.png', 'Disponible', 'Ampliación Veracruz de Ignacio de la Llave 703 Interior 042, San Dulce los bajos, Guerrero', 563.57, 'Nueva', '2019-04-20', NULL, '2024-12-02', FALSE, 2),
+(12, 'Casa en Cerrada Perú', 2813812.75, 'fotoCasa12.png', 'Disponible', 'Viaducto Grecia 870 Interior 696, San Virginia los bajos, Distrito Federal', 570.73, '2da mano', '2019-01-14', NULL, '2024-12-02', FALSE, 2),
+(13, 'Casa en Cerrada Quezada', 4781384.79, 'fotoCasa13.png', 'Disponible', 'Corredor de la Fuente 478 Interior 790, Nueva Chipre, Veracruz de Ignacio de la Llave', 241.27, '2da mano', '2020-04-12', NULL, '2024-12-02', FALSE, 3),
+(14, 'Casa en Cerrada Sur Sisneros', 8114976.55, 'fotoCasa14.png', 'Disponible', 'Retorno Niño 330 118, San Pablo los altos, Zacatecas', 493.04, 'Usada', '2021-05-26', NULL, '2024-12-02', FALSE, 3),
+(15, 'Casa en Viaducto Hidalgo', 6329149.85, 'fotoCasa15.png', 'Disponible', 'Viaducto Sur Sevilla 330 Edif. 834 , Depto. 474, Vieja Iraq, Distrito Federal', 560.03, 'Usada', '2017-08-21', NULL, '2024-12-02', FALSE, 2),
+(16, 'Casa en Calle Belice', 3078014.64, 'fotoCasa16.png', 'Disponible', 'Corredor Bulgaria 700 Edif. 599 , Depto. 096, San Vanesa de la Montaña, Guanajuato', 552.07, 'Nueva', '2020-09-15', NULL, '2024-12-02', FALSE, 2),
+(17, 'Casa en Circunvalación Somalia', 7984156.41, 'fotoCasa17.png', 'Disponible', 'Pasaje República Unida de Tanzanía 439 Edif. 547 , Depto. 947, San Nancy los altos, San Luis Potosí', 556.31, 'Nueva', '2022-07-22', NULL, '2024-12-02', FALSE, 3),
+(18, 'Casa en Pasaje Nueva Zelandia', 6638501.58, 'fotoCasa18.png', 'Disponible', 'Calle Singapur 056 Interior 733, San Alberto de la Montaña, México', 108.71, '2da mano', '2019-12-19', NULL, '2024-12-02', FALSE, 2),
+(19, 'Casa en Retorno Camerún', 4100300.86, 'fotoCasa19.png', 'Disponible', 'Eje vial Chile 866 Edif. 301 , Depto. 993, Nueva Bahamas, Zacatecas', 568.31, 'Nueva', '2018-03-22', NULL, '2024-12-02', FALSE, 2),
+(20, 'Casa en Continuación Jalisco', 8021023.45, 'fotoCasa20.png', 'Disponible', 'Privada Sur Terrazas 629 Interior 625, Vieja Portugal, Baja California Sur', 490.26, 'Nueva', '2019-08-12', NULL, '2024-12-02', FALSE, 3),
+(21, 'Casa en Eje vial Singapur', 3446102.28, 'fotoCasa21.png', 'Disponible', 'Boulevard Sur Salinas 906 121, Vieja Sri Lanka, Hidalgo', 337.58, 'Nueva', '2022-02-06', NULL, '2024-12-02', FALSE, 3),
+(22, 'Casa en Cerrada Hidalgo', 2742183.25, 'fotoCasa22.png', 'Disponible', 'Ampliación Sur Barrios 375 Edif. 822 , Depto. 779, Nueva Maldivas, Chiapas', 173.2, 'Usada', '2019-02-05', NULL, '2024-12-02', FALSE, 2),
+(23, 'Casa en Avenida Norte Beltrán', 2947191.02, 'fotoCasa23.png', 'Disponible', 'Prolongación Sur Valadez 333 214, San Barbara de la Montaña, Michoacán de Ocampo', 175.85, 'Usada', '2016-02-14', NULL, '2024-12-02', FALSE, 3),
+(24, 'Casa en Circuito Nieves', 7512622.07, 'fotoCasa24.png', 'Disponible', 'Cerrada Serrano 014 Interior 188, San Felipe los bajos, Querétaro', 279.47, 'Nueva', '2021-03-29', NULL, '2024-12-02', FALSE, 3),
+(25, 'Casa en Retorno Sur Valadez', 5060930.18, 'fotoCasa25.png', 'Disponible', 'Andador Sur Baca 176 388, Nueva Italia, Durango', 171.5, '2da mano', '2023-10-25', NULL, '2024-12-02', FALSE, 2),
+(26, 'Casa en Prolongación Costa Rica', 7518658.23, 'fotoCasa26.png', 'Disponible', 'Avenida Tlaxcala 148 146, San Ivonne de la Montaña, Distrito Federal', 272.78, 'Nueva', '2023-03-29', NULL, '2024-12-02', FALSE, 2),
+(27, 'Casa en Calle Norte Tejeda', 3327461.53, 'fotoCasa27.png', 'Disponible', 'Viaducto Norte de la O 375 117, Vieja Libia, Michoacán de Ocampo', 224.84, 'Nueva', '2022-07-09', NULL, '2024-12-02', FALSE, 2),
+(28, 'Casa en Circunvalación Norte Terán', 9371217.87, 'fotoCasa28.png', 'Disponible', 'Periférico Cardenas 227 Interior 627, Vieja Chile, Michoacán de Ocampo', 588.25, '2da mano', '2019-10-19', NULL, '2024-12-02', FALSE, 3),
+(29, 'Casa en Boulevard Viera', 8848773.56, 'fotoCasa29.png', 'Disponible', 'Calle Puebla 641 Edif. 390 , Depto. 865, San Susana de la Montaña, Morelos', 538.41, '2da mano', '2020-09-04', NULL, '2024-12-02', FALSE, 2),
+(30, 'Casa en Circunvalación Montenegro', 7676739.67, 'fotoCasa30.png', 'Disponible', 'Avenida Sur Gamez 284 Edif. 252 , Depto. 416, San Eugenio los bajos, Tlaxcala', 101.64, 'Usada', '2018-03-30', NULL, '2024-12-02', FALSE, 3)
