@@ -19,3 +19,5 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app); // Exporta la autenticación
 export const googleProvider = new GoogleAuthProvider(); // Exporta el proveedor de Google
 
+//NO CAMBIAR EL CONTENIDO DE ESTE ARCHIVO, UTILICEN VARIABLES DE ENTORNO PARA PODER USAR FIREBASE O PARA PODER PROPORCIONARLE
+//LOS CREDENCIALES DE FIREBASE
