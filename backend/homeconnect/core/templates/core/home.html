@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Bienvenido</title>
+</head>
+<body>
+    <h1>Bienvenido, {{ usuario }}!</h1>
+    <p>Tipo de usuario: {{ tipo_usuario }}</p>
+
+    <a href="{% url 'logout' %}">Cerrar sesión</a>
+</body>
+</html>
