@@ -100,7 +100,14 @@
     <h1>Propiedades en Venta [Agente de Ventas]</h1>
     <h2>Agente: {{ usuario.nombre }}</h2> 
     <div style="text-align: center;">
-        <a href="{% url 'lista_conversaciones' %}">Conversaciones</a>
+        <a href="{% url 'lista_conversaciones' %}">
+            Conversaciones
+            {% if conversaciones_con_punto_rojo > 0 %}
+                <span style="background-color: red; color: white; border-radius: 50%; padding: 3px 8px; font-size: 14px; margin-left: 10px;">
+                    {{ conversaciones_con_punto_rojo }}
+                </span>
+            {% endif %}
+        </a>
         <a href="{% url 'logout' %}">Cerrar sesión</a>
     </div>
 
@@ -121,6 +128,7 @@
                         {% for oferta in propiedad.ofertas.all %}
                             <li>
                                 {{ oferta.descuento }}% de descuento - {{ oferta.descripcion }}<br>
+                                <strong>Fecha de expiración:</strong> {{ oferta.fecha_expiracion|date:"d M Y, H:i" }}<br>
                                 <a href="{% url 'editar_oferta' oferta.id %}">Editar</a> | 
                                 <a href="{% url 'eliminar_oferta' oferta.id %}">Eliminar</a>
                             </li>

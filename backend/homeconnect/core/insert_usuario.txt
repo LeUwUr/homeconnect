@@ -2,10 +2,10 @@ from core.models import Usuario
 
 # Crear un usuario
 usuario = Usuario.objects.create_user(
-    correo_electronico='eva@gmail.com',
-    nombre='Eva Aguirre',
-    contrasena='evina159',  # Se encriptará automáticamente
-    tipo_usuario='Administrador',
+    correo_electronico='lauratrejo@gmail.com',
+    nombre='Laura Trejo',
+    contrasena='',  # Se encriptará automáticamente
+    tipo_usuario='Comprador',
     telefono='6641857496'
 )
 

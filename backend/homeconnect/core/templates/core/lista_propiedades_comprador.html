@@ -98,33 +98,94 @@
             color: #007bff;
             text-decoration: none;
             font-weight: bold;
+            margin-right: 10px; /* Espacio entre los enlaces */
         }
 
         .navbar a:hover {
             text-decoration: underline;
         }
+
+        /* Estilos para el contador de conversaciones no vistas */
+        .contador-conversaciones {
+            background-color: red;
+            color: white;
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 50%;
+            font-size: 14px;
+            position: relative;
+            top: -5px; /* Ajusta el contador al centro verticalmente */
+            right: -5px; /* Ajusta el contador hacia la derecha */
+        }
+
+        .contador-notificaciones {
+            background-color: red;
+            color: white;
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 50%;
+            font-size: 14px;
+            position: relative;
+            top: -5px; /* Ajusta el contador al centro verticalmente */
+            right: -5px; /* Ajusta el contador hacia la derecha */
+        }
     </style>
 </head>
 <body>
+    <!-- Barra de navegación -->
     <div class="navbar">
         <h2>Cliente: {{ usuario.nombre }}</h2>
-        <div>
-            <a href="{% url 'lista_conversaciones' %}">Conversaciones</a> |
+        <div style="display: flex; align-items: center;">
+            <a href="{% url 'lista_conversaciones' %}">Conversaciones</a>
+            {% if conversaciones_con_punto_rojo > 0 %}
+                <span class="contador-conversaciones">{{ conversaciones_con_punto_rojo }}</span>
+            {% endif %}
+            |
             <a href="{% url 'logout' %}">Cerrar sesión</a>
+            |
+            <a href="{% url 'lista_favoritos' %}">Lista de favoritos</a>
+            |
+            <!-- Agregar enlace de notificaciones -->
+            <a href="{% url 'lista_notificaciones' %}">Notificaciones</a>
+            {% if notificaciones_no_leidas > 0 %}
+                <span class="contador-notificaciones">{{ notificaciones_no_leidas }}</span>
+            {% endif %}
         </div>
     </div>
 
     <h1>Propiedades en Venta</h1>
 
+    <!-- Mostrar sección de notificaciones destacadas 
+    <div class="notificaciones-destacadas">
+        {% if notificaciones_destacadas %}
+            <h3>Notificaciones recientes</h3>
+            <ul>
+                {% for notificacion in notificaciones_destacadas %}
+                    <li>
+                        <strong>{{ notificacion.tipo }}:</strong> {{ notificacion.mensaje }} <br>
+                        <small>{{ notificacion.fecha|date:"d M Y, H:i" }}</small>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div-->
+
+    <!-- Mostrar las propiedades disponibles -->
     <div class="propiedades">
         {% for propiedad in propiedades %}
         <div class="propiedad">
             <h2>{{ propiedad.titulo }}</h2>
             <p><strong>Ubicación:</strong> {{ propiedad.direccion }}</p>
+            <p><strong>Disponibilidad:</strong> {{ propiedad.disponibilidad }}</p>
             <p><strong>Precio original:</strong> ${{ propiedad.precio|intcomma }} MXN</p>
 
             {% if propiedad.ofertas.exists %}
-                <p><strong>Precio con oferta:</strong> ${{ propiedad.precio_con_descuento|intcomma }} MXN</p>
+                {% for oferta in propiedad.ofertas.all %}
+                <p><strong>Precio con oferta:</strong> ${{ propiedad.precio_con_descuento|floatformat:2|intcomma }} MXN</p>
+                <p><strong>Descuento:</strong> {{ oferta.descuento }}%</p>
+                <p><strong>Descripción:</strong> {{ oferta.descripcion }}</p>
+                <p><strong>Fecha de expiración:</strong> {{ oferta.fecha_expiracion|date:"d M Y, H:i" }}</p>
+                {% endfor %}
             {% else %}
                 <p>No hay ofertas disponibles para esta propiedad.</p>
             {% endif %}
@@ -136,8 +197,21 @@
                 {% csrf_token %}
                 <button type="submit">Abrir Chat</button>
             </form>
+
+            <!-- Mostrar botón de agregar a favoritos solo si la propiedad no está en favoritos -->
+            {% if propiedad.id not in propiedades_favoritas %}
+                <form action="{% url 'agregar_favorito' propiedad.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit">Agregar a Favoritos</button>
+                </form>
+            {% else %}
+                <p>Ya está en tus favoritos.</p>
+            {% endif %}
         </div>
         {% endfor %}
     </div>
 </body>
+
+
+
 </html>

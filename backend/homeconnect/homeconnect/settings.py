@@ -38,7 +38,6 @@ ALLOWED_HOSTS = [
 
 INSTALLED_APPS = [
     'rest_framework',
-    'corsheaders',
     'clientes',
     'propiedades',
     'django.contrib.admin',
@@ -47,12 +46,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',
+    'django.contrib.humanize',
     'solicitudes',
     'moduloac',
     'core',
     'moduloi',
-    'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
 ]
@@ -112,14 +110,25 @@ WSGI_APPLICATION = 'homeconnect.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'homeconnect',  # Nombre de tu base de datos
-        'USER': 'postgres',     # Usuario de PostgreSQL
-        'PASSWORD': '',  # Contraseña de tu usuario
-        'HOST': 'localhost',    # Dirección del servidor
-        'PORT': '5432',         # Puerto por defecto de PostgreSQL
-    }
+     'default': {
+         'ENGINE': 'django.db.backends.postgresql',
+         'NAME': 'homeconnect',  # Nombre de tu base de datos
+         'USER': 'postgres',     # Usuario de PostgreSQL
+         'PASSWORD': '',  # Contraseña de tu usuario
+         'HOST': 'localhost',    # Dirección del servidor
+         'PORT': '5432',         # Puerto por defecto de PostgreSQL
+     }
+    #'default': {
+    #    'ENGINE': 'django.db.backends.mysql',
+    #    'NAME': 'casasbd3',
+    #    'USER': 'root',
+    #    'PASSWORD': '1234',
+    #    'HOST': 'localhost',
+    #    'PORT': '3306',
+    #    'OPTIONS': {
+    #        'charset': 'utf8',  # Cambiar de utf8mb4 a utf8
+    #    }
+    #}
 }
 
 
@@ -152,11 +161,13 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Tijuana'
 
 USE_I18N = True
 
-USE_TZ = True
+USE_L10N = True
+
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
@@ -169,14 +180,15 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
-    ],
-}
+#REST_FRAMEWORK = {
+#    'DEFAULT_AUTHENTICATION_CLASSES': [
+#        'rest_framework.authentication.TokenAuthentication',
+#    ],
+#}
 
 MEDIA_URL = '/media/' 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+AUTH_USER_MODEL = 'core.Usuario'

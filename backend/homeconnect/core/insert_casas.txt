@@ -1,4 +1,5 @@
-from core.models import Propiedad, Usuario
+from core.models import Usuario
+from moduloac.models import Propiedad
 
 propiedad = Propiedad.objects.create(
     titulo='Casa en el centro',
@@ -18,3 +19,42 @@ insert into public.propiedades values
 (4,'Casa4',123456.00,'foto4.png','Disponible','Calle Real de la Ermita',150.00,'Nueva','11-02-2005',null,'27-11-2024',False,3),
 (5,'Casa5',750850.00,'foto5.png','Disponible','Calle Real del Bosque',128.00,'Nueva','30-10-2001',null,'27-11-2024',False,3),
 (6,'Casa6',100422.00,'foto6.png','Disponible','Calle Real de Otay',121.00,'Nueva','25-02-1995',null,'27-11-2024',False,3)
+
+
+
+
+
+
+
+from core.models import Usuario
+from random import randint
+import faker
+from datetime import datetime, timedelta
+import random
+
+# Crear una instancia de Faker para generar datos aleatorios
+fake = faker.Faker()
+
+# Generar una fecha aleatoria entre dos fechas
+def random_date(start_date, end_date):
+    delta = end_date - start_date
+    random_days = random.randint(0, delta.days)
+    return start_date + timedelta(days=random_days)
+
+# Rango de fechas para el campo fecha_registro
+start_date = datetime(2022, 1, 1)
+end_date = datetime.now()
+
+# Crear 10 usuarios de tipo "Comprador" con fecha_registro aleatoria
+for _ in range(100):
+    usuario = Usuario.objects.create_user(
+        correo_electronico=fake.email(),
+        nombre=fake.name(),
+        contrasena='Comprador123',  # Contraseña predeterminada
+        tipo_usuario='Comprador',
+        telefono='1234785263'
+    )
+    # Asignar fecha_registro aleatoria
+    usuario.fecha_registro = random_date(start_date, end_date)
+    usuario.save()
+    print(f"Usuario {usuario.nombre} creado exitosamente con fecha de registro {usuario.fecha_registro}.")

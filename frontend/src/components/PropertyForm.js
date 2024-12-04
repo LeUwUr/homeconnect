@@ -8,11 +8,14 @@ function PropertyForm({ onNext, updateFormData }) {
     titulo: '',
     precio: '',
     foto_frontal: null,
-    disponibilidad: 'Disponible',
     direccion: '',
-    tamano_m2: '',
+    tamano_m2_terr: '',
+    tamano_m2_const: '',
     estado: 'Nuevo',
-    fecha_adquisicion: format(new Date(), 'yyyy-MM-dd')
+    fecha_adquisicion: format(new Date(), 'yyyy-MM-dd'),
+    fecha_publicacion: format(new Date(), 'yyyy-MM-dd'),
+    fecha_venta: null,
+    eliminado: false
   });
 
   const [previewUrl, setPreviewUrl] = useState('');
@@ -123,14 +126,27 @@ function PropertyForm({ onNext, updateFormData }) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Tamaño (m²)</label>
+          <label className="block text-sm font-medium text-gray-700">Tamaño Terreno (m²)</label>
           <input
             type="number"
-            name="tamano_m2"
+            name="tamano_m2_terr"
             required
             step="0.01"
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-            value={formData.tamano_m2}
+            value={formData.tamano_m2_terr}
+            onChange={handleChange}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Tamaño Construcción (m²)</label>
+          <input
+            type="number"
+            name="tamano_m2_const"
+            required
+            step="0.01"
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            value={formData.tamano_m2_const}
             onChange={handleChange}
           />
         </div>
@@ -150,20 +166,6 @@ function PropertyForm({ onNext, updateFormData }) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Disponibilidad</label>
-          <select
-            name="disponibilidad"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-            value={formData.disponibilidad}
-            onChange={handleChange}
-          >
-            <option value="Disponible">Disponible</option>
-            <option value="Vendido">Vendido</option>
-            <option value="Rentado">Rentado</option>
-          </select>
-        </div>
-
-        <div>
           <label className="block text-sm font-medium text-gray-700">Fecha de Adquisición</label>
           <input
             type="date"
@@ -171,6 +173,18 @@ function PropertyForm({ onNext, updateFormData }) {
             required
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
             value={formData.fecha_adquisicion}
+            onChange={handleChange}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Fecha de Publicación</label>
+          <input
+            type="date"
+            name="fecha_publicacion"
+            required
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            value={formData.fecha_publicacion}
             onChange={handleChange}
           />
         </div>

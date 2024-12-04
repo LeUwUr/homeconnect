@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
 from django.conf import settings
+from datetime import timezone
 
 class UsuarioManager(BaseUserManager):
     def create_user(self, correo_electronico, nombre, contrasena=None, **extra_fields):
@@ -16,11 +17,19 @@ class UsuarioManager(BaseUserManager):
     def create_superuser(self, correo_electronico, nombre, contrasena=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
+
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError('El superusuario debe tener is_staff=True.')
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError('El superusuario debe tener is_superuser=True.')
+
         return self.create_user(correo_electronico, nombre, contrasena, **extra_fields)
+
 
 class Usuario(AbstractBaseUser, PermissionsMixin):
     usuario_id = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=255)
+    username = models.CharField(max_length=255)
     correo_electronico = models.EmailField(unique=True)
     telefono = models.CharField(max_length=20, blank=True, null=True)
     tipo_usuario = models.CharField(
@@ -44,29 +53,16 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.correo_electronico
+    
+    def get_full_name(self):
+        return self.nombre
 
-class Propiedad(models.Model):
-    titulo = models.CharField(max_length=255)
-    precio = models.DecimalField(max_digits=10, decimal_places=2)
-    foto_frontal = models.TextField(blank=True, null=True)
-    disponibilidad = models.CharField(max_length=50, blank=True, null=True)
-    direccion = models.CharField(max_length=255)
-    tamano_m2 = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    estado = models.CharField(max_length=50, blank=True, null=True)
-    fecha_adquisicion = models.DateField(blank=True, null=True)
-    fecha_venta = models.DateField(blank=True, null=True)
-    fecha_publicacion = models.DateField(blank=True, null=True)
-    eliminado = models.BooleanField(default=False)
-    usuario = models.ForeignKey('Usuario', on_delete=models.SET_NULL, null=True, blank=True)
+    def get_short_name(self):
+        return self.nombre
 
-    class Meta:
-        db_table = 'propiedades'
-
-    def __str__(self):
-        return self.titulo
 
 class Oferta(models.Model):
-    propiedad = models.ForeignKey('Propiedad', on_delete=models.CASCADE, related_name='ofertas')
+    propiedad = models.ForeignKey('moduloac.Propiedad', on_delete=models.CASCADE, related_name='ofertas')
     descuento = models.DecimalField(max_digits=5, decimal_places=2, null=False, default=0.00)
     descripcion = models.TextField(default='La oferta se cerrará dentro de poco',null=False)
     precio_ofrecido = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)  
@@ -76,9 +72,14 @@ class Oferta(models.Model):
         default='pendiente'
     )  
     fecha_oferta = models.DateTimeField(auto_now_add=True)
+    fecha_expiracion = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.propiedad.nombre} - {self.descuento}%"
+    
+    def esta_expirada(self):
+        """Método para verificar si la oferta ha expirado."""
+        return self.fecha_expiracion and self.fecha_expiracion < timezone.now()
 
     class Meta:
         db_table = 'ofertas'
@@ -95,7 +96,7 @@ class Conversacion(models.Model):
         on_delete=models.CASCADE, 
         related_name='conversaciones_agente'
     )
-    propiedad = models.ForeignKey('Propiedad', on_delete=models.CASCADE)  
+    propiedad = models.ForeignKey('moduloac.Propiedad', on_delete=models.CASCADE)  
     fecha_creacion = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -116,3 +117,40 @@ class Mensaje(models.Model):
 
     def __str__(self):
         return f"Mensaje de {self.remitente} en {self.fecha_envio.strftime('%Y-%m-%d %H:%M:%S')}"
+
+class Favorito(models.Model):
+    usuario = models.ForeignKey('Usuario', on_delete=models.CASCADE)
+    propiedad = models.ForeignKey('moduloac.Propiedad', on_delete=models.CASCADE)
+    fecha_agregado = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('usuario', 'propiedad')
+        db_table = 'favoritos'
+
+class Notificacion(models.Model):
+    TIPO_CAMBIO_PRECIO = 'Cambio de precio'
+    TIPO_CAMBIO_OFERTA = 'Cambio de oferta'
+    TIPO_VENCIMIENTO_OFERTA = 'Vencimiento de oferta'
+    TIPO_CAMBIO_DISPONIBILIDAD = 'Cambio de disponibilidad'
+    TIPO_GUARDADO_FAVORITO = 'Guardado en favoritos'
+
+    TIPO_NOTIFICACION_CHOICES = [
+        (TIPO_CAMBIO_PRECIO, 'Cambio de precio'),
+        (TIPO_CAMBIO_OFERTA, 'Cambio de oferta'),
+        (TIPO_VENCIMIENTO_OFERTA, 'Vencimiento de oferta'),
+        (TIPO_CAMBIO_DISPONIBILIDAD, 'Cambio de disponibilidad'),
+        (TIPO_GUARDADO_FAVORITO, 'Guardado en favoritos'),
+    ]
+
+    usuario = models.ForeignKey('Usuario', on_delete=models.CASCADE)  # Usuario que recibe la notificación
+    propiedad = models.ForeignKey('moduloac.Propiedad', on_delete=models.CASCADE)
+    tipo = models.CharField(max_length=50, choices=TIPO_NOTIFICACION_CHOICES)
+    mensaje = models.TextField()
+    leida = models.BooleanField(default=False)
+    fecha = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Notificación para {self.usuario.username} - {self.tipo}"
+    
+    class Meta:
+        db_table = 'notificaciones'
